@@ -5,17 +5,30 @@ source("code/utils/graphs.R")
 ###### Importation des données ######
 data_fr <- excel_import("code/data.xlsx", "France")
 #! Ajouter une base pour les US
-#! Bien récupérer la population => toutes les séries sont par habitant
+
 ###### Données - Richesse ######
 
-date_debut <- "2009-12-01"
-date_fin <- "2024-06-01"
+date_debut <- "1998-12-01"
+date_fin <- "2023-03-01"
 
-richesse_fr <- df_richesse(data_fr, date_debut, date_fin, 2) #! les séries sont en niveau, les exprimer par habitant + consumption deflators
+richesse_fr <- df_richesse(data_fr, date_debut, date_fin, 1)
 plot_richesse(richesse_fr, "France")
 
+###### Données - Variable explicative ######
 
+#! Consommation par habitant + deflation with CPI
+#! Représentation graphique
+#! Test de la corrélation entre la conso de la période t et de la période t-5
 
-#! All series were deflated with consumption deflators and expressed in per capita terms.
-#! de-seasonalized using the X-12 method where necessary.
-#! Variables de contrôle
+###### Données - Variables de contrôles ######
+
+#! Construction de jeux de variables de contrôle:
+#! Lag t − 2 of consumption growth, income growth, unemployment rate, differenced short-term interest rate, interest rate spread and consumer sentiment
+#! Rq: consommation, revenu, richesse: were deflated with consumption deflators and expressed in per capita terms
+#! Series were de-seasonalized using the X-12 method where necessary.
+
+#! Représentation graphique des variables de contrôles
+
+###### Tests de stationnarité ######
+
+#! library(urca) -> passer les 3 dfs avec test ADF + KPSS

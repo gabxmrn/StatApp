@@ -17,6 +17,17 @@ df_richesse <- function(donnees, debut, fin, serie_immo) {
   # Ajout de la richesse totale du ménage
   df["totale"] <- df["financier"] + df["immobilier"]
 
+  # Expression de la richesse par habitant
+  pop <- donnees[rownames(donnees) >= debut & rownames(donnees) <= fin,
+                 "population"] / 10^6
+
+  df <- df / pop
+
+  #
+  cpi <- donnees[rownames(donnees) >= debut & rownames(donnees) <= fin,
+                 "cpi"]
+
+  df <- df / cpi
 
   return(df)
 }
