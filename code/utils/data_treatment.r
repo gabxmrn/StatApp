@@ -1,0 +1,22 @@
+df_richesse <- function(donnees, debut, fin, serie_immo) {
+
+  # Sélection de la série à utiliser pour le patrimoine
+  if (serie_immo == 1) {
+    nom_immo <- "immo_1"
+  } else if (serie_immo == 2) {
+    nom_immo <- "immo_2"
+  } else {
+    stop("Erreur : serie_immo doit être 1 ou 2")
+  }
+
+  # Nouveau dataframe avec uniquement le patrimoine financier et immobilier
+  df <- donnees[rownames(donnees) >= debut & rownames(donnees) <= fin,
+                c("actif_fin", nom_immo)]
+  colnames(df) <- c("financier", "immobilier")
+
+  # Ajout de la richesse totale du ménage
+  df["totale"] <- df["financier"] + df["immobilier"]
+
+
+  return(df)
+}
