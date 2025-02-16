@@ -28,5 +28,7 @@ plot_consommation <- function(df, pays) {
        main = paste("Evolution de la consommation - ", pays),
        xlab = "Années",
        ylab = "Valeur en Millions d'euros (base 2015)")
+       ylim = c(y_min,y_max)
 
 }
+

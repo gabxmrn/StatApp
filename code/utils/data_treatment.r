@@ -35,13 +35,14 @@ df_richesse <- function(donnees, debut, fin, serie_immo) {
 
 df_consommation <- function(donnees, debut, fin) {
 
-  # Nouveau dataframe avec uniquement le patrimoine financier et immobilier
+  # Nouveau dataframe avec uniquement la consommation et le CPI
   df <- donnees[rownames(donnees) >= debut & rownames(donnees) <= fin,
-                c("conso","cpi")]
+                "conso", drop = FALSE]
 
   cpi <- donnees[rownames(donnees) >= debut & rownames(donnees) <= fin,
                  "cpi"]
 
+  # Correction de la consommation avec l'indice des prix
   df <- df / cpi
 
   return(df)
