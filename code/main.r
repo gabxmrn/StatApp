@@ -16,9 +16,9 @@ plot_richesse(richesse_fr, "France")
 
 ###### Données - Variable explicative ######
 
-#! Consommation par habitant + deflation with CPI
-#! Représentation graphique
-#! Test de la corrélation entre la conso de la période t et de la période t-5
+consommation_fr <- df_consommation(data_fr, date_debut, date_fin)
+plot_consommation(consommation_fr, "France")
+#cor_conso_intertemp(consommation_fr, date_debut, date_fin, "pearson")
 
 ###### Données - Variables de contrôles ######
 

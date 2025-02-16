@@ -16,3 +16,17 @@ plot_richesse <- function(df, pays) {
          lty = c("solid", "dashed"))
 
 }
+
+plot_consommation <- function(df, pays) {
+
+  dates <- as.Date(rownames(df))
+
+  y_min <- min(df$conso)
+  y_max <- max(df$conso)
+
+  plot(dates, df$conso, type = "l",
+       main = paste("Evolution de la consommation - ", pays),
+       xlab = "Années",
+       ylab = "Valeur en Millions d'euros (base 2015)")
+
+}
