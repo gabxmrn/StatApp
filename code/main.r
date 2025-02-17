@@ -1,6 +1,8 @@
 source("code/utils/import.R")
 source("code/utils/data_treatment.R")
 source("code/utils/graphs.R")
+source("code/utils/test_correlation.R")
+source("code/utils/stationarity.R")
 
 ###### Importation des données ######
 data_fr <- excel_import("code/data.xlsx", "France")
@@ -16,9 +18,9 @@ plot_richesse(richesse_fr, "France")
 
 ###### Données - Variable explicative ######
 
-consommation_fr <- df_consommation(data_fr, date_debut, date_fin)
+consommation_fr <- df_consommation(data_fr, date_debut, date_fin, TRUE)
 plot_consommation(consommation_fr, "France")
-cor_conso_intertemp(consommation_fr, date_debut, date_fin)
+#cor_conso(consommation_fr, "France")
 
 ###### Données - Variables de contrôles ######
 
@@ -31,4 +33,5 @@ cor_conso_intertemp(consommation_fr, date_debut, date_fin)
 
 ###### Tests de stationnarité ######
 
-#! library(urca) -> passer les 3 dfs avec test ADF + KPSS
+stationarite(richesse_fr)
+stationarite(consommation_fr)

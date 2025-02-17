@@ -23,7 +23,7 @@ df_richesse <- function(donnees, debut, fin, serie_immo) {
 
   df <- df / pop
 
-  #
+  # Correction de la consommation avec l'indice des prix
   cpi <- donnees[rownames(donnees) >= debut & rownames(donnees) <= fin,
                  "cpi"]
 
@@ -33,7 +33,7 @@ df_richesse <- function(donnees, debut, fin, serie_immo) {
 }
 
 
-df_consommation <- function(donnees, debut, fin) {
+df_consommation <- function(donnees, debut, fin, log = TRUE) {
 
   # Nouveau dataframe avec uniquement la consommation et le CPI
   df <- donnees[rownames(donnees) >= debut & rownames(donnees) <= fin,
@@ -42,8 +42,24 @@ df_consommation <- function(donnees, debut, fin) {
   cpi <- donnees[rownames(donnees) >= debut & rownames(donnees) <= fin,
                  "cpi"]
 
+  pop <- donnees[rownames(donnees) >= debut & rownames(donnees) <= fin,
+                 "population"] / 10^6
+
+  # Expression de la consommation par habitant
+  df <- df / pop
+
   # Correction de la consommation avec l'indice des prix
   df <- df / cpi
+
+  # Calcul du log de la consommation
+  if (log == TRUE) {
+    log_diff <- diff(log(df[[1]]))
+    df$var_log_conso <- c(NA, log_diff)
+
+    df <- df[-1, , drop = FALSE]
+    df <- df[, -1, drop = FALSE]
+    colnames(df) <- "conso"
+  }
 
   return(df)
 }
