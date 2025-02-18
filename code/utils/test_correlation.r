@@ -1,10 +1,11 @@
 cor_conso <- function(conso, pays) {
 
-  df <- data.frame(
-    "lag0" = conso[6:nrow(conso), 1],
-    "lag5" = conso[1:(nrow(conso) - 5), 1]
-  )
+  var_log_conso <- as.data.frame(conso$var_log_conso)
 
-  corr <- cor(df$lag0, df$lag5, method = "pearson")
-  print(paste("La corrélation de la consommation pour la", pays, "est de", corr))
+  df <- c(rep(NA, 5),
+          (conso$conso[6:length(conso$conso)] - conso$conso[5:(length(conso$conso) - 1)]) / conso$conso[1:(length(conso$conso) - 5)])
+  df <- as.data.frame(na.omit(df))
+
+  corr <- cor(df, conso[6:nrow(conso), "var_log_conso"], method = "pearson")
+  print(paste("La corrélation pour le", pays, "est de", corr))
 }

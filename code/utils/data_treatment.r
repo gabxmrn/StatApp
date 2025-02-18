@@ -33,7 +33,7 @@ df_richesse <- function(donnees, debut, fin, serie_immo) {
 }
 
 
-df_consommation <- function(donnees, debut, fin, log = TRUE) {
+df_consommation <- function(donnees, debut, fin) {
 
   # Nouveau dataframe avec uniquement la consommation et le CPI
   df <- donnees[rownames(donnees) >= debut & rownames(donnees) <= fin,
@@ -52,14 +52,11 @@ df_consommation <- function(donnees, debut, fin, log = TRUE) {
   df <- df / cpi
 
   # Calcul du log de la consommation
-  if (log == TRUE) {
-    log_diff <- diff(log(df[[1]]))
-    df$var_log_conso <- c(NA, log_diff)
+  log_diff <- diff(log(df[[1]]))
 
-    df <- df[-1, , drop = FALSE]
-    df <- df[, -1, drop = FALSE]
-    colnames(df) <- "conso"
-  }
+  # Ajout au df
+  df$var_log_conso <- c(NA, log_diff)
+  df <- df[-1, , drop = FALSE]
 
   return(df)
 }

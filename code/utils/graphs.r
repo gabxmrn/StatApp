@@ -33,13 +33,19 @@ plot_consommation <- function(df, pays) {
 
   dates <- as.Date(rownames(df))
 
-  y_min <- min(df$conso)
-  y_max <- max(df$conso)
-
+  par(mfrow = c(2, 1))
   plot(dates, df$conso, type = "l",
        main = paste("Evolution de la consommation - ", pays),
        xlab = "Années",
        ylab = yleg,
-       ylim = c(y_min, y_max))
+       ylim = c(min(df$conso), max(df$conso)))
+
+  plot(dates, df$var_log_conso, type = "l",
+       main = paste("Variation du log de la consommation - ", pays),
+       xlab = "Années",
+       ylab = yleg,
+       ylim = c(min(df$var_log_conso), max(df$var_log_conso)))
+
+  par(mfrow = c(1, 1))
 
 }

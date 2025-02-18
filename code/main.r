@@ -21,11 +21,11 @@ date_fin <- "2023-12-01"
 
 ###### Données - Variable explicative ######
 
-# consommation_fr <- df_consommation(data_fr, date_debut, date_fin, TRUE)
+consommation_fr <- df_consommation(data_fr, date_debut, date_fin)
 # plot_consommation(consommation_fr, "France")
-#cor_conso(consommation_fr, "France")
+cor_conso(consommation_fr, "France")
 
-consommation_us <- df_consommation(data_us, date_debut, date_fin, FALSE)
+consommation_us <- df_consommation(data_us, date_debut, date_fin)
 plot_consommation(consommation_us, "US")
 cor_conso(consommation_us, "US")
 
