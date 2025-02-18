@@ -50,25 +50,24 @@ plot_consommation <- function(df, pays) {
 
 }
 
-visualisation_controles <- function(variables_controle) {
-  # Ensure that the 'date' column is of Date type
-  if (!inherits(variables_controle$date, "Date")) {
-    variables_controle$date <- as.Date(as.character(variables_controle$date))
-  }
-  
-  # Save current graphical parameters
+visualisation_controles <- function(variables_controle, pays) {
+
+  dates <- as.Date(rownames(variables_controle))
+
   op <- par(no.readonly = TRUE)
-  
-  # Set up a 2-row x 3-column plotting layout
+
+  # Affichage des graphiques
   par(mfrow = c(2, 3))
-  
-  # Loop through each control variable (skip the first column which is "date")
-  for (i in 2:ncol(variables_controle)) {
-    message("Plotting: ", names(variables_controle)[i])
-    # Compute y-axis limits for the current variable, ignoring NA values
+
+  # Pour chaque variable
+  for (i in 1:ncol(variables_controle)) {
+    message("Graphique: ", names(variables_controle)[i])
+
     y_min <- min(variables_controle[[i]], na.rm = TRUE)
-    y_max <  # Create the plot
-    plot(variables_controle$date,
+    y_max <- max(variables_controle[[i]], na.rm = TRUE)
+
+    # Création du graphique
+    plot(dates,
          variables_controle[[i]],
          type = "l",
          main = names(variables_controle)[i],
@@ -76,8 +75,8 @@ visualisation_controles <- function(variables_controle) {
          ylab = names(variables_controle)[i],
          ylim = c(y_min, y_max))
   }
-  
-  # Restore original graphical parameters
+
+  mtext(paste("Évolution des variables de contrôle -", pays),
+        outer = TRUE, cex = 1.5, font = 2)
   par(op)
 }
-- max(variables_controle[[i]], na.rm = TRUE)
