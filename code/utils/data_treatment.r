@@ -65,6 +65,18 @@ df_control <- function(donnees, debut, fin) {
 
   data_sub <- donnees[rownames(donnees) >= debut & rownames(donnees) <= fin, ]
 
+  # Séries de la consommation et du revenu: expression par tête
+  pop <- data_sub[rownames(data_sub) >= debut & rownames(data_sub) <= fin,
+                  "population"] / 10^6
+  data_sub["conso"] <- data_sub["conso"] / pop
+  data_sub["revenu"] <- data_sub["revenu"] / pop
+
+  # Séries de la consommation et du revenu: correction de l'inflation
+  cpi <- data_sub[rownames(data_sub) >= debut & rownames(data_sub) <= fin,
+                  "cpi"]
+  data_sub["conso"] <- data_sub["conso"] / cpi
+  data_sub["revenu"] <- data_sub["revenu"] / cpi
+
   # Construction des variables de contrôle à partir de data_fr_sub
   # Après diff(), la longueur devient nrow(data_fr_sub) - 1 et, après lag(2),
   # les 2 premiers indices = NA. On garde les indices valides de 3 à (nrow - 1).

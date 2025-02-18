@@ -37,15 +37,16 @@ var_control_fr <- df_control(data_fr, date_debut, date_fin)
 # dev.off()
 
 var_control_us <- df_control(data_us, date_debut, date_fin)
-# png("myplots.png", width = 800, height = 600)
-# visualisation_controles(var_control_us, "US")
-# dev.off()
+png("myplots.png", width = 800, height = 600)
+visualisation_controles(var_control_us, "US")
+dev.off()
 
 ###### Tests de stationnarité ######
 
 # stationarite(richesse_fr)
 # stationarite(consommation_fr)
-stationarite(var_control_fr)
+# stationarite(var_control_fr)
 
 # stationarite(richesse_us)
 # stationarite(consommation_us)
+# stationarite(var_control_us)
