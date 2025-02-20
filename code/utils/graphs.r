@@ -1,9 +1,9 @@
 plot_richesse <- function(df, pays) {
 
   if (pays == "France") {
-    yleg <- "Valeur en Millions d'euros (base 2015)"
+    yleg <- "Valeur en euros (base 2015)"
   } else if (pays == "US") {
-    yleg <- "Valeur en Millions de dollars"
+    yleg <- "Valeur en dollars (base 2015)"
   }
 
   dates <- as.Date(rownames(df))
@@ -26,14 +26,14 @@ plot_richesse <- function(df, pays) {
 plot_consommation <- function(df, pays) {
 
   if (pays == "France") {
-    yleg <- "Valeur en Millions d'euros (base 2015)"
+    yleg <- "Valeur en euros (base 2015)"
   } else if (pays == "US") {
-    yleg <- "Valeur en Millions de dollars"
+    yleg <- "Valeur en dollars (base 2015)"
   }
 
   dates <- as.Date(rownames(df))
 
-  par(mfrow = c(2, 1))
+  par(mfrow = c(1, 2))
   plot(dates, df$conso, type = "l",
        main = paste("Evolution de la consommation - ", pays),
        xlab = "Années",

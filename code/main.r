@@ -10,36 +10,44 @@ data_us <- excel_import("code/data.xlsx", "US")
 
 ###### Données - Richesse ######
 
-date_debut <- "1997-12-01"
-date_fin <- "2023-12-01"
+date_debut <- "1998-12-01"
+date_fin <- "2023-03-01"
 
 # richesse_fr <- df_richesse(data_fr, date_debut, date_fin, 1)
+# png("richesse_fr.png", width = 500, height = 600)
 # plot_richesse(richesse_fr, "France")
+# dev.off()
 
 # richesse_us <- df_richesse(data_us, date_debut, date_fin, 1)
+# png("richesse_us.png", width = 500, height = 600)
 # plot_richesse(richesse_us, "US")
+# dev.off()
 
 ###### Données - Variable explicative ######
 
 # consommation_fr <- df_consommation(data_fr, date_debut, date_fin)
+# png("conso_fr.png", width = 800, height = 400)
 # plot_consommation(consommation_fr, "France")
+# dev.off()
 # cor_conso(consommation_fr, "France")
 
 # consommation_us <- df_consommation(data_us, date_debut, date_fin)
+# png("conso_us.png", width = 800, height = 400)
 # plot_consommation(consommation_us, "US")
+# dev.off()
 # cor_conso(consommation_us, "US")
 
 ###### Données - Variables de contrôles ######
 
-var_control_fr <- df_control(data_fr, date_debut, date_fin)
-# png("myplots.png", width = 800, height = 600)
+# var_control_fr <- df_control(data_fr, date_debut, date_fin)
+# png("varcontrol_fr.png", width = 800, height = 600)
 # visualisation_controles(var_control_fr, "France")
 # dev.off()
 
-var_control_us <- df_control(data_us, date_debut, date_fin)
-png("myplots.png", width = 800, height = 600)
-visualisation_controles(var_control_us, "US")
-dev.off()
+# var_control_us <- df_control(data_us, date_debut, date_fin)
+# png("varcontrol_us.png", width = 800, height = 600)
+# visualisation_controles(var_control_us, "US")
+# dev.off()
 
 ###### Tests de stationnarité ######
 
