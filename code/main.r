@@ -16,8 +16,9 @@ date_fin <- "2023-12-01"
 # richesse_fr <- df_richesse(data_fr, date_debut, date_fin, 1)
 # plot_richesse(richesse_fr, "France")
 
-# richesse_us <- df_richesse(data_us, date_debut, date_fin, 1)
-# plot_richesse(richesse_us, "US")
+richesse_us <- df_richesse(data_us, date_debut, date_fin, 1)
+plot_richesse(richesse_us, "US")
+head(richesse_us)
 
 ###### Données - Variable explicative ######
 
@@ -25,7 +26,7 @@ date_fin <- "2023-12-01"
 # plot_consommation(consommation_fr, "France")
 #cor_conso(consommation_fr, "France")
 
-consommation_us <- df_consommation(data_us, date_debut, date_fin, FALSE)
+consommation_us <- df_consommation(data_us, date_debut, date_fin, TRUE)
 plot_consommation(consommation_us, "US")
 cor_conso(consommation_us, "US")
 
@@ -43,5 +44,5 @@ cor_conso(consommation_us, "US")
 # stationarite(richesse_fr)
 # stationarite(consommation_fr)
 
-# stationarite(richesse_us)
-# stationarite(consommation_us)
+#stationarite(richesse_us)
+#stationarite(consommation_us)
