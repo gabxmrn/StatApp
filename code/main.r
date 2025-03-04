@@ -10,39 +10,68 @@ data_us <- excel_import("code/data.xlsx", "US")
 
 ###### Données - Richesse ######
 
-date_debut <- "1997-12-01"
-date_fin <- "2023-12-01"
+date_debut <- "1998-12-01"
+date_fin <- "2023-03-01"
 
 # richesse_fr <- df_richesse(data_fr, date_debut, date_fin, 1)
+# png("richesse_fr.png", width = 500, height = 600)
 # plot_richesse(richesse_fr, "France")
+# dev.off()
 
+<<<<<<< HEAD
 richesse_us <- df_richesse(data_us, date_debut, date_fin, 1)
 plot_richesse(richesse_us, "US")
 head(richesse_us)
+=======
+# richesse_us <- df_richesse(data_us, date_debut, date_fin, 1)
+# png("richesse_us.png", width = 500, height = 600)
+# plot_richesse(richesse_us, "US")
+# dev.off()
+>>>>>>> 2433b0628a762e8468e25bdc3d0143d43703b88c
 
 ###### Données - Variable explicative ######
 
-# consommation_fr <- df_consommation(data_fr, date_debut, date_fin, TRUE)
+# consommation_fr <- df_consommation(data_fr, date_debut, date_fin)
+# png("conso_fr.png", width = 800, height = 400)
 # plot_consommation(consommation_fr, "France")
-#cor_conso(consommation_fr, "France")
+# dev.off()
+# cor_conso(consommation_fr, "France")
 
+<<<<<<< HEAD
 consommation_us <- df_consommation(data_us, date_debut, date_fin, TRUE)
 plot_consommation(consommation_us, "US")
 cor_conso(consommation_us, "US")
+=======
+# consommation_us <- df_consommation(data_us, date_debut, date_fin)
+# png("conso_us.png", width = 800, height = 400)
+# plot_consommation(consommation_us, "US")
+# dev.off()
+# cor_conso(consommation_us, "US")
+>>>>>>> 2433b0628a762e8468e25bdc3d0143d43703b88c
 
 ###### Données - Variables de contrôles ######
 
-#! Construction de jeux de variables de contrôle:
-#! Lag t − 2 of consumption growth, income growth, unemployment rate, differenced short-term interest rate, interest rate spread and consumer sentiment
-#! Rq: consommation, revenu, richesse: were deflated with consumption deflators and expressed in per capita terms
-#! Series were de-seasonalized using the X-12 method where necessary.
+# var_control_fr <- df_control(data_fr, date_debut, date_fin)
+# png("varcontrol_fr.png", width = 800, height = 600)
+# visualisation_controles(var_control_fr, "France")
+# dev.off()
 
-#! Représentation graphique des variables de contrôles
+# var_control_us <- df_control(data_us, date_debut, date_fin)
+# png("varcontrol_us.png", width = 800, height = 600)
+# visualisation_controles(var_control_us, "US")
+# dev.off()
 
 ###### Tests de stationnarité ######
 
 # stationarite(richesse_fr)
 # stationarite(consommation_fr)
+# stationarite(var_control_fr)
 
+<<<<<<< HEAD
 #stationarite(richesse_us)
 #stationarite(consommation_us)
+=======
+# stationarite(richesse_us)
+# stationarite(consommation_us)
+# stationarite(var_control_us)
+>>>>>>> 2433b0628a762e8468e25bdc3d0143d43703b88c

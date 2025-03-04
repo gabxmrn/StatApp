@@ -13,7 +13,7 @@ stationarite <- function(df)  {
     par(mfrow = c(1, 1))
 
     # Test ADF
-    adf_test <- ur.df(df[[col]], type = "drift", selectlags = "AIC")
+    adf_test <- ur.df(df[[col]], type = "trend", selectlags = "AIC")
     print(summary(adf_test))
 
     # Test de KPSS
