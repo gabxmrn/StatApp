@@ -47,7 +47,7 @@ data_us_new_var <- data_us_new_var %>%
 # Définir chi
 chi <- 0.6  # Remplacer par la valeur réelle de χ
 
-# Appliquer les lags et calculer l'expression
+#calcul de delta_barre_W (voir article p.20)
 data_us_new_var <- data_us_new_var %>%
   mutate(
     Delta_W_t1 = lag(Delta_W, 1),  # Décalage de ΔW par 1
@@ -57,14 +57,22 @@ data_us_new_var <- data_us_new_var %>%
     delta_barre_W = chi * (Delta_W + chi * Delta_W_t1 + chi^2 * Delta_W_t2 + chi^3 * Delta_W_t3)/lag(conso,4)
   )
 
+#Calcul de delta_C (p.20) et lag de toutes les variables
 data_us_new_var <- data_us_new_var %>%
   mutate(delta_C = (conso - lag(conso))/lag(conso,5)) %>%
   mutate(across(c(delta_barre_W,chomage, diff_taux_ct,spread ,income_growth), ~ lead(.x, n = 1), .names = "lag1_{.col}"))
 
+#régression de la p.20
 model_2 <- lm(Delta_log_conso ~ lag1_delta_barre_W + lag1_diff_taux_ct + lag1_spread + lag1_income_growth, data = data_us_new_var, na.action = na.omit)
 alpha_w <- coef(model_2)["lag1_delta_barre_W"]
+
 #calcul avec chi = 0.6
 PMC_ev <- alpha_w / 0.24
+
+#Comme la conso est en k$ et les assets en M$,
+#On divise par 10 pour avoir l'unité de Slacalek
+PMC_ev <- PMC_ev / 10
+
 return(PMC_ev)
 
 }
