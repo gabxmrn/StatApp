@@ -1,23 +1,13 @@
 install.packages("dplyr")
 
-source("code/utils/import.R")
-source("code/utils/data_treatment.R")
-source("code/utils/graphs.R")
-source("code/utils/test_correlation.R")
-source("code/utils/stationarity.R")
-
-###### Importation des données ######
-data_fr <- excel_import("code/data.xlsx", "France")
-data_us <- excel_import("code/data.xlsx", "US")
-
 #print(head(data_us))
-
+chi <- function(df){
 #to get lead function
 library(dplyr)
 
 
 #df des nouvelles variables
-data_us_new_var <- data_us[seq(1, nrow(data_us), by = 4),]
+data_us_new_var <- df[seq(1, nrow(df), by = 4),]
 
 #ajout spread et croissance conso et revenu
 data_us_new_var$spread <- data_us_new_var$taux_lt - data_us_new_var$taux_ct
@@ -31,7 +21,7 @@ data_us_new_var <- data_us_new_var %>%
   mutate(taux_ct = (taux_ct - lag(taux_ct)))
 
 #Obtenir \Delta log(C_t)
-data_us_new_var$delta_log_c <- c(diff(log(data_us$conso[seq(1, nrow(data_us), by = 4)])),NA)
+data_us_new_var$delta_log_c <- c(diff(log(df$conso[seq(1, nrow(df), by = 4)])),NA)
 
 #Obtenir les lag t-1 et t-2, on les nomme lag1 et lag2 suivi du nom de la variable originale
 data_us_new_var <- data_us_new_var %>%
@@ -56,4 +46,6 @@ data_us_new_var$predicted_lag1_delta_log_c <- predict(model_IV, newdata = new_da
 model <- lm(delta_log_c ~ predicted_lag1_delta_log_c + cpi, data = data_us_new_var, na.action = na.omit)
 chi <- coef(model)["predicted_lag1_delta_log_c"]
 
-print(chi)
+return(chi)
+
+}

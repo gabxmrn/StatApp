@@ -3,6 +3,7 @@ source("code/utils/data_treatment.R")
 source("code/utils/graphs.R")
 source("code/utils/test_correlation.R")
 source("code/utils/stationarity.R")
+source("code/utils/chi.R")
 
 ###### Importation des données ######
 data_fr <- excel_import("code/data.xlsx", "France")
@@ -30,9 +31,9 @@ head(richesse_us)
 # dev.off()
 # cor_conso(consommation_fr, "France")
 
-consommation_us <- df_consommation(data_us, date_debut, date_fin, TRUE)
-plot_consommation(consommation_us, "US")
-cor_conso(consommation_us, "US")
+#consommation_us <- df_consommation(data_us, date_debut, date_fin, TRUE)
+#plot_consommation(consommation_us, "US")
+#cor_conso(consommation_us, "US")
 
 ###### Données - Variables de contrôles ######
 
@@ -52,11 +53,8 @@ cor_conso(consommation_us, "US")
 # stationarite(consommation_fr)
 # stationarite(var_control_fr)
 
-<<<<<<< HEAD
 #stationarite(richesse_us)
 #stationarite(consommation_us)
-=======
-# stationarite(richesse_us)
-# stationarite(consommation_us)
-# stationarite(var_control_us)
->>>>>>> 2433b0628a762e8468e25bdc3d0143d43703b88c
+
+chi <- chi(data_us)
+print(chi)
