@@ -21,7 +21,7 @@ data_us_new_var <- data_us_new_var %>%
 
 #obtenir epsilon
 epsilon <- chi(df)["residuals"]
-print(epsilon)
+
 #obtenir delta W_t
 date_debut <- "1998-12-01"
 date_fin <- "2023-03-01"
@@ -66,11 +66,13 @@ data_us_new_var <- data_us_new_var %>%
 model_2 <- lm(Delta_log_conso ~ lag1_delta_barre_W + lag1_diff_taux_ct + lag1_spread + lag1_income_growth, data = data_us_new_var, na.action = na.omit)
 alpha_w <- coef(model_2)["lag1_delta_barre_W"]
 
+print(summary(model_2))
+
 #calcul avec chi = 0.6
 PMC_ev <- alpha_w / 0.24
 
 #Comme la conso est en k$ et les assets en M$,
-#On divise par 10 pour avoir l'unité de Slacalek
+#On divise par 10 pour avoir l'unité de Slacalek (en %)
 PMC_ev <- PMC_ev / 10
 
 return(PMC_ev)

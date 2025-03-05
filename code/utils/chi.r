@@ -36,16 +36,31 @@ data_us_new_var <- data_us_new_var %>%
 model_IV <- lm(lag1_delta_log_c ~ lag2_chomage + lag2_diff_taux_ct + lag2_spread + lag2_conso_growth + lag2_confiance + lag2_income_growth, data = data_us_new_var, na.action = na.omit)
 
 #reconstruction de la prédiction sur les IV
+
+#new_data <- data_us_new_var %>%
+#  select(lag1_chomage ,lag1_diff_taux_ct,lag1_spread,lag1_conso_growth, lag1_confiance, lag1_income_growth) %>%  # Sélectionner les colonnes
+#  rename(lag2_chomage = lag1_chomage, lag2_diff_taux_ct = lag1_diff_taux_ct, lag2_spread = lag1_spread, lag2_conso_growth = lag1_conso_growth, lag2_confiance = lag1_confiance, lag2_income_growth = lag1_income_growth)
+
+#construction de l'argument pour faire la prédiction du régressseur dans la 2eme partie de l'IV reg
 new_data <- data_us_new_var %>%
-  select(lag1_chomage ,lag1_diff_taux_ct,lag1_spread,lag1_conso_growth, lag1_confiance, lag1_income_growth) %>%  # Sélectionner les colonnes
-  rename(lag2_chomage = lag1_chomage, lag2_diff_taux_ct = lag1_diff_taux_ct, lag2_spread = lag1_spread, lag2_conso_growth = lag1_conso_growth, lag2_confiance = lag1_confiance, lag2_income_growth = lag1_income_growth)
+  select(lag2_chomage ,lag2_diff_taux_ct,lag2_spread,lag2_conso_growth, lag2_confiance, lag2_income_growth) # Sélectionner les colonnes
+
+
 
 data_us_new_var$predicted_lag1_delta_log_c <- predict(model_IV, newdata = new_data)
 
 #régression finale
-model <- lm(delta_log_c ~ predicted_lag1_delta_log_c + cpi, data = data_us_new_var, na.action = na.omit)
+model <- lm(delta_log_c ~ predicted_lag1_delta_log_c, data = data_us_new_var, na.action = na.omit)
+#print(summary(model))
 
-chi <- coef(model)["predicted_lag1_delta_log_c"]
+
+#Essai avec une IV reg intégrée (les deux donnent les memes chi sur fr et us)
+install.packages("AER")  # Install the package (only needed once)
+library(AER)  # Load the package
+
+iv_model <- ivreg(delta_log_c ~ lag1_delta_log_c | lag2_chomage + lag2_diff_taux_ct + lag2_spread + lag2_conso_growth + lag2_confiance + lag2_income_growth, data = data_us_new_var)
+
+chi <- coef(iv_model)["lag1_delta_log_c"]
 residuals <- c(as.vector(residuals(model)),NA)
 
 result <- list(chi = chi, residuals = residuals)

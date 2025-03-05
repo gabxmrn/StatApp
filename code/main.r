@@ -60,5 +60,5 @@ head(richesse_us)
 chi <- chi(data_us)["chi"]
 print(chi$chi)
 
-PMC <- PMC(data_us)
-print(PMC)
+#PMC <- PMC(data_us)
+#print(PMC)
