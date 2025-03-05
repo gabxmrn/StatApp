@@ -16,7 +16,7 @@ data_us_new_var <- data_us_new_var %>%
 
 #Donne le "differenced" taux_ct : change pas franchement le résultat et conflit de notation à revoir
 data_us_new_var <- data_us_new_var %>%
-  mutate(taux_ct = (taux_ct - lag(taux_ct)))
+  mutate(diff_taux_ct = (taux_ct - lag(taux_ct)))
 
 
 #obtenir epsilon
@@ -32,7 +32,7 @@ data_us_new_var <- data_us_new_var %>%
   mutate(delta_W = (wealth - lag(wealth))/lag(conso))
 
 #première régression dite par efficace par Slacalek
-model <- lm(epsilon ~ delta_W + taux_ct + spread + income_growth, data = data_us_new_var, na.action = na.omit)
+model <- lm(epsilon ~ delta_W + diff_taux_ct + spread + income_growth, data = data_us_new_var, na.action = na.omit)
 
 alpha_w <- coef(model)["delta_W"]
 #calcul avec chi = 0.6
@@ -59,9 +59,9 @@ data_us_new_var <- data_us_new_var %>%
 
 data_us_new_var <- data_us_new_var %>%
   mutate(delta_C = (conso - lag(conso))/lag(conso,5)) %>%
-  mutate(across(c(delta_barre_W,chomage, taux_ct,spread ,income_growth), ~ lead(.x, n = 1), .names = "lag1_{.col}"))
+  mutate(across(c(delta_barre_W,chomage, diff_taux_ct,spread ,income_growth), ~ lead(.x, n = 1), .names = "lag1_{.col}"))
 
-model_2 <- lm(Delta_log_conso ~ lag1_delta_barre_W + lag1_taux_ct + lag1_spread + lag1_income_growth, data = data_us_new_var, na.action = na.omit)
+model_2 <- lm(Delta_log_conso ~ lag1_delta_barre_W + lag1_diff_taux_ct + lag1_spread + lag1_income_growth, data = data_us_new_var, na.action = na.omit)
 alpha_w <- coef(model_2)["lag1_delta_barre_W"]
 #calcul avec chi = 0.6
 PMC_ev <- alpha_w / 0.24
