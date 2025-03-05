@@ -56,5 +56,8 @@ head(richesse_us)
 #stationarite(richesse_us)
 #stationarite(consommation_us)
 
-chi <- chi(data_us)
+chi <- chi(data_us)["residuals"]
 print(chi)
+
+alpha_w <- PMC(data_us)
+print(alpha_w)

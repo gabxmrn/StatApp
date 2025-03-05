@@ -44,8 +44,12 @@ data_us_new_var$predicted_lag1_delta_log_c <- predict(model_IV, newdata = new_da
 
 #régression finale
 model <- lm(delta_log_c ~ predicted_lag1_delta_log_c + cpi, data = data_us_new_var, na.action = na.omit)
-chi <- coef(model)["predicted_lag1_delta_log_c"]
 
-return(chi)
+chi <- coef(model)["predicted_lag1_delta_log_c"]
+residuals <- residuals(model)
+
+result <- list(chi = chi, residuals = residuals)
+
+return(result)
 
 }
