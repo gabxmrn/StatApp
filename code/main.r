@@ -4,6 +4,7 @@ source("code/utils/graphs.R")
 source("code/utils/test_correlation.R")
 source("code/utils/stationarity.R")
 source("code/utils/chi.R")
+source("code/utils/PMC.R")
 
 ###### Importation des données ######
 data_fr <- excel_import("code/data.xlsx", "France")
@@ -56,8 +57,7 @@ head(richesse_us)
 #stationarite(richesse_us)
 #stationarite(consommation_us)
 
-chi <- chi(data_us)["residuals"]
-print(chi)
+#chi <- chi(data_us)["residuals"]
 
 alpha_w <- PMC(data_us)
 print(alpha_w)

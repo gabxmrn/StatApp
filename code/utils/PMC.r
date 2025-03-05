@@ -1,5 +1,6 @@
 PMC <- function(df){
 
+source("code/utils/chi.R")
 library(dplyr)
 
 
@@ -20,20 +21,50 @@ data_us_new_var <- data_us_new_var %>%
 
 #obtenir epsilon
 epsilon <- chi(df)["residuals"]
-
+print(epsilon)
 #obtenir delta W_t
 date_debut <- "1998-12-01"
 date_fin <- "2023-03-01"
 richesse_us <- df_richesse(df, date_debut, date_fin, 1)
-data_us_new_var$wealth <- richesse_us["totale"]
-
+data_us_new_var$wealth <- richesse_us[seq(1, nrow(df), by = 4),"totale"]
+data_us_new_var$epsilon <- epsilon$residuals
 data_us_new_var <- data_us_new_var %>%
   mutate(delta_W = (wealth - lag(wealth))/lag(conso))
 
+#première régression dite par efficace par Slacalek
 model <- lm(epsilon ~ delta_W + taux_ct + spread + income_growth, data = data_us_new_var, na.action = na.omit)
 
 alpha_w <- coef(model)["delta_W"]
+#calcul avec chi = 0.6
+PMC_ev <- alpha_w / 0.24
 
-return(alpha_w)
+#obtention des nouvelles variables pour la 2eme méthode
+# Calcul de ΔW = Wt - Wt-1
+data_us_new_var <- data_us_new_var %>%
+  mutate(Delta_W = wealth - lag(wealth, 1),
+  Delta_log_conso = log(conso) - lag(log(conso),1))
+
+# Définir chi
+chi <- 0.6  # Remplacer par la valeur réelle de χ
+
+# Appliquer les lags et calculer l'expression
+data_us_new_var <- data_us_new_var %>%
+  mutate(
+    Delta_W_t1 = lag(Delta_W, 1),  # Décalage de ΔW par 1
+    Delta_W_t2 = lag(Delta_W, 2),  # Décalage de ΔW par 2
+    Delta_W_t3 = lag(Delta_W, 3),  # Décalage de ΔW par 3
+    Delta_W_t4 = lag(Delta_W, 4),  # Décalage de ΔW par 4
+    delta_barre_W = chi * (Delta_W + chi * Delta_W_t1 + chi^2 * Delta_W_t2 + chi^3 * Delta_W_t3)/lag(conso,4)
+  )
+
+data_us_new_var <- data_us_new_var %>%
+  mutate(delta_C = (conso - lag(conso))/lag(conso,5)) %>%
+  mutate(across(c(delta_barre_W,chomage, taux_ct,spread ,income_growth), ~ lead(.x, n = 1), .names = "lag1_{.col}"))
+
+model_2 <- lm(Delta_log_conso ~ lag1_delta_barre_W + lag1_taux_ct + lag1_spread + lag1_income_growth, data = data_us_new_var, na.action = na.omit)
+alpha_w <- coef(model_2)["lag1_delta_barre_W"]
+#calcul avec chi = 0.6
+PMC_ev <- alpha_w / 0.24
+return(PMC_ev)
 
 }
