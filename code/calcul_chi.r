@@ -26,6 +26,10 @@ data_us_new_var <- data_us_new_var %>%
 data_us_new_var <- data_us_new_var %>%
   mutate(conso_growth = (conso - lag(conso)) / lag(conso) * 100)
 
+#Donne le "differenced" taux_ct : change pas franchement le résultat et conflit de notation à revoir
+data_us_new_var <- data_us_new_var %>%
+  mutate(taux_ct = (taux_ct - lag(taux_ct)))
+
 #Obtenir \Delta log(C_t)
 data_us_new_var$delta_log_c <- c(diff(log(data_us$conso[seq(1, nrow(data_us), by = 4)])),NA)
 

@@ -18,16 +18,9 @@ date_fin <- "2023-03-01"
 # plot_richesse(richesse_fr, "France")
 # dev.off()
 
-<<<<<<< HEAD
 richesse_us <- df_richesse(data_us, date_debut, date_fin, 1)
 plot_richesse(richesse_us, "US")
 head(richesse_us)
-=======
-# richesse_us <- df_richesse(data_us, date_debut, date_fin, 1)
-# png("richesse_us.png", width = 500, height = 600)
-# plot_richesse(richesse_us, "US")
-# dev.off()
->>>>>>> 2433b0628a762e8468e25bdc3d0143d43703b88c
 
 ###### Données - Variable explicative ######
 
@@ -37,17 +30,9 @@ head(richesse_us)
 # dev.off()
 # cor_conso(consommation_fr, "France")
 
-<<<<<<< HEAD
 consommation_us <- df_consommation(data_us, date_debut, date_fin, TRUE)
 plot_consommation(consommation_us, "US")
 cor_conso(consommation_us, "US")
-=======
-# consommation_us <- df_consommation(data_us, date_debut, date_fin)
-# png("conso_us.png", width = 800, height = 400)
-# plot_consommation(consommation_us, "US")
-# dev.off()
-# cor_conso(consommation_us, "US")
->>>>>>> 2433b0628a762e8468e25bdc3d0143d43703b88c
 
 ###### Données - Variables de contrôles ######
 
