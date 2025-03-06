@@ -1,11 +1,14 @@
-PMC <- function(df){
+
+#data_us_new_var n'est pas que pour les US, c'est une ancienne notation
+
+PMC <- function(df,by){
 
 source("code/utils/chi.R")
 library(dplyr)
 
 
 #df des nouvelles variables
-data_us_new_var <- df[seq(1, nrow(df), by = 4),]
+data_us_new_var <- df[seq(1, nrow(df), by = by),]
 
 #ajout spread et croissance conso et revenu
 data_us_new_var$spread <- data_us_new_var$taux_lt - data_us_new_var$taux_ct
@@ -20,17 +23,18 @@ data_us_new_var <- data_us_new_var %>%
 
 
 #obtenir epsilon
-epsilon <- chi(df)["residuals"]
+epsilon <- chi(df,by)["residuals"]
 
 #obtenir delta W_t
 date_debut <- "1998-12-01"
 date_fin <- "2023-03-01"
 richesse_us <- df_richesse(df, date_debut, date_fin, 1)
-data_us_new_var$wealth <- richesse_us[seq(1, nrow(df), by = 4),"totale"]
+data_us_new_var$wealth <- richesse_us[seq(1, nrow(df), by = by),"totale"]
 data_us_new_var$epsilon <- epsilon$residuals
 data_us_new_var <- data_us_new_var %>%
   mutate(delta_W = (wealth - lag(wealth))/lag(conso))
 
+print(head(data_us_new_var))
 #première régression dite par efficace par Slacalek
 model <- lm(epsilon ~ delta_W + diff_taux_ct + spread + income_growth, data = data_us_new_var, na.action = na.omit)
 
@@ -53,14 +57,13 @@ data_us_new_var <- data_us_new_var %>%
     Delta_W_t1 = lag(Delta_W, 1),  # Décalage de ΔW par 1
     Delta_W_t2 = lag(Delta_W, 2),  # Décalage de ΔW par 2
     Delta_W_t3 = lag(Delta_W, 3),  # Décalage de ΔW par 3
-    Delta_W_t4 = lag(Delta_W, 4),  # Décalage de ΔW par 4
     delta_barre_W = chi * (Delta_W + chi * Delta_W_t1 + chi^2 * Delta_W_t2 + chi^3 * Delta_W_t3)/lag(conso,4)
   )
 
 #Calcul de delta_C (p.20) et lag de toutes les variables
 data_us_new_var <- data_us_new_var %>%
   mutate(delta_C = (conso - lag(conso))/lag(conso,5)) %>%
-  mutate(across(c(delta_barre_W,chomage, diff_taux_ct,spread ,income_growth), ~ lead(.x, n = 1), .names = "lag1_{.col}"))
+  mutate(across(c(delta_barre_W,chomage, diff_taux_ct,spread ,income_growth), ~ lag(.x, n = 1), .names = "lag1_{.col}"))
 
 #régression de la p.20
 model_2 <- lm(Delta_log_conso ~ lag1_delta_barre_W + lag1_diff_taux_ct + lag1_spread + lag1_income_growth, data = data_us_new_var, na.action = na.omit)
