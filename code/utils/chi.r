@@ -8,6 +8,7 @@ install.packages("dplyr")
 #c'est une ancienne notation
 
 chi <- function(df,by){
+
 #to get lag function
 library(dplyr)
 
@@ -21,7 +22,8 @@ data_us_new_var <- data_us_new_var %>%
   revenu = revenu/(population*cpi),
     income_growth = (revenu - lag(revenu)) / lag(revenu) * 100,
   conso_growth = (conso - lag(conso)) / lag(conso) * 100)
-#Donne le "differenced" taux_ct : change pas franchement le résultat et conflit de notation à revoir
+
+#Donne le "differenced" taux_ct
 data_us_new_var <- data_us_new_var %>%
   mutate(diff_taux_ct = (taux_ct - lag(taux_ct)))
 
@@ -51,23 +53,23 @@ model_IV <- lm(lag1_delta_log_c ~ lag2_chomage + lag2_diff_taux_ct + lag2_spread
 new_data <- data_us_new_var %>%
   select(lag2_chomage ,lag2_diff_taux_ct,lag2_spread,lag2_conso_growth, lag2_confiance, lag2_income_growth) # Sélectionner les colonnes
 
-
-
 data_us_new_var$predicted_lag1_delta_log_c <- predict(model_IV, newdata = new_data)
 
 #régression finale
-model <- lm(delta_log_c ~ lag1_delta_log_c, data = data_us_new_var, na.action = na.omit)
+model <- lm(delta_log_c ~ predicted_lag1_delta_log_c, data = data_us_new_var, na.action = na.omit)
 
 
 
 #Essai avec une IV reg intégrée (les deux donnent les memes chi sur fr et us)
 install.packages("AER")  # Install the package (only needed once)
-library(AER)  # Load the package
+library(AER)  # Load the package for ivreg
 
 iv_model <- ivreg(delta_log_c ~ lag1_delta_log_c | lag2_chomage + lag2_diff_taux_ct + lag2_spread + lag2_conso_growth + lag2_confiance + lag2_income_growth, data = data_us_new_var, na.action = na.omit)
 print(summary(iv_model))
 
-chi <- coef(model)["lag1_delta_log_c"]
+chi <- coef(iv_model)["lag1_delta_log_c"]
+
+#Pour le calcul ultérieur de la PMC (résidu de l'ivreg)
 residuals <- c(NA,NA,NA,as.vector(residuals(model)))
 
 result <- list(chi = chi, residuals = residuals)

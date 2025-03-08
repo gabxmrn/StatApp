@@ -22,7 +22,7 @@ data_us_new_var <- data_us_new_var %>%
   mutate(diff_taux_ct = (taux_ct - lag(taux_ct)))
 
 
-#obtenir epsilon
+#obtenir le terme d'erreur pour régression
 epsilon <- chi(df,by)["residuals"]
 
 #obtenir delta W_t
@@ -35,6 +35,7 @@ data_us_new_var <- data_us_new_var %>%
   mutate(delta_W = (wealth - lag(wealth))/lag(conso))
 
 print(head(data_us_new_var))
+
 #première régression dite pas efficace par Slacalek
 model <- lm(epsilon ~ delta_W + diff_taux_ct + spread + income_growth, data = data_us_new_var, na.action = na.omit)
 
@@ -71,7 +72,7 @@ alpha_w <- coef(model_2)["lag1_delta_barre_W"]
 
 print(summary(model_2))
 
-#calcul avec chi = 0.6
+#calcul de la PMC eventual avec chi = 0.6 chi(1-chi) = 0.24
 PMC_ev <- alpha_w / 0.24
 
 #Comme la conso est en k$ et les assets en M$,
