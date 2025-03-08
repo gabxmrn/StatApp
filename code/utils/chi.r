@@ -15,18 +15,19 @@ library(dplyr)
 #df des nouvelles variables
 data_us_new_var <- df[seq(1, nrow(df), by = by),]
 
-#ajout spread et croissance conso et revenu, (correction par cpi nécessaire ? non faite)
+#ajout spread et croissance conso et revenu, (correction par cpi nécessaire ? faite)
 data_us_new_var$spread <- data_us_new_var$taux_lt - data_us_new_var$taux_ct
 data_us_new_var <- data_us_new_var %>%
-  mutate(income_growth = (revenu - lag(revenu)) / lag(revenu) * 100)
-data_us_new_var <- data_us_new_var %>%
-  mutate(conso_growth = (conso - lag(conso)) / lag(conso) * 100)
+  mutate(conso = conso/population,
+    income_growth = (revenu - lag(revenu)) / lag(revenu) * 100,
+  conso_growth = (conso - lag(conso)) / lag(conso) * 100)
 #Donne le "differenced" taux_ct : change pas franchement le résultat et conflit de notation à revoir
 data_us_new_var <- data_us_new_var %>%
   mutate(diff_taux_ct = (taux_ct - lag(taux_ct)))
 
 #Obtenir \Delta log(C_t), représente la variation de C_t
 data_us_new_var$delta_log_c <- c(NA, diff(log(data_us_new_var$conso)))
+print(head(data_us_new_var))
 
 #Obtenir les lag t-1 et t-2, on les nomme lag1 et lag2 suivi du nom de la variable originale
 data_us_new_var <- data_us_new_var %>%
@@ -61,7 +62,7 @@ model <- lm(delta_log_c ~ predicted_lag1_delta_log_c, data = data_us_new_var, na
 install.packages("AER")  # Install the package (only needed once)
 library(AER)  # Load the package
 
-iv_model <- ivreg(delta_log_c ~ lag1_delta_log_c | lag2_chomage + lag2_diff_taux_ct + lag2_spread + lag2_conso_growth + lag2_confiance + lag2_income_growth, data = data_us_new_var)
+iv_model <- ivreg(delta_log_c ~ lag1_delta_log_c | lag2_chomage + lag2_diff_taux_ct + lag2_spread + lag2_conso_growth + lag2_confiance + lag2_income_growth, data = data_us_new_var, na.action = na.omit)
 
 chi <- coef(iv_model)["lag1_delta_log_c"]
 residuals <- c(NA,NA,NA,as.vector(residuals(model)))

@@ -57,7 +57,7 @@ head(richesse_us)
 #stationarite(richesse_us)
 #stationarite(consommation_us)
 
-chi <- chi(data_fr,1)["chi"]
+chi <- chi(data_us,1)["chi"]
 print(chi$chi)
 
 #PMC <- PMC(data_fr,1)

@@ -35,7 +35,7 @@ data_us_new_var <- data_us_new_var %>%
   mutate(delta_W = (wealth - lag(wealth))/lag(conso))
 
 print(head(data_us_new_var))
-#première régression dite par efficace par Slacalek
+#première régression dite pas efficace par Slacalek
 model <- lm(epsilon ~ delta_W + diff_taux_ct + spread + income_growth, data = data_us_new_var, na.action = na.omit)
 
 alpha_w <- coef(model)["delta_W"]
