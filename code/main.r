@@ -8,7 +8,7 @@ source("code/models/PMC.R")
 
 ###### Importation des données ######
 data_fr <- excel_import("code/data_modif.xlsx", "France")
-#data_us <- excel_import("code/data_modif.xlsx", "US")
+data_us <- excel_import("code/data_modif.xlsx", "US")
 
 ###### Saisonnalité ######
 
@@ -22,8 +22,8 @@ data_fr["revenu"] <- X13(ts_conso_fr)
 
 ###### Données - Richesse ######
 
-# date_debut <- "1998-12-01"
-# date_fin <- "2023-03-01"
+# date_debut <- "1997-12-01"
+# date_fin <- "2023-12-01"
 
 # richesse_fr <- df_richesse(data_fr, date_debut, date_fin, 1)
 # plot_richesse(richesse_fr, "France")
@@ -55,13 +55,25 @@ data_fr["revenu"] <- X13(ts_conso_fr)
 # stationarite(consommation_fr)
 # stationarite(var_control_fr)
 
-#stationarite(richesse_us)
-#stationarite(consommation_us)
+# stationarite(richesse_us)
+# stationarite(consommation_us)
 
 ###### Modélisation ######
 
-chi <- chi(data_fr, 1)["chi"]
-print(chi$chi)
+# chi <- chi(data_fr, 1)["chi"]
+# print(chi$chi)
 
-#PMC <- PMC(data_fr,1)
-#print(PMC)
+# Pour les US
+date_debut <- "1997-12-01"
+date_fin <- "2023-03-01"
+
+# Pour la France, immo 1
+# date_debut <- "1998-12-01"
+# date_fin <- "2023-03-01"
+
+# Pour la France, immo 2
+# date_debut <- "2009-12-01"
+# date_fin <- "2024-06-01"
+
+PMC <- PMC(data_us, 1, date_debut, date_fin, FALSE)
+print(PMC)

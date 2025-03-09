@@ -19,7 +19,7 @@ df_richesse <- function(donnees, debut, fin, serie_immo) {
 
   # Expression de la richesse par habitant
   pop <- donnees[rownames(donnees) >= debut & rownames(donnees) <= fin,
-                 "population"] / 10^6
+                 "population"]
 
   df <- df / pop
 
@@ -43,7 +43,7 @@ df_consommation <- function(donnees, debut, fin) {
                  "cpi"]
 
   pop <- donnees[rownames(donnees) >= debut & rownames(donnees) <= fin,
-                 "population"] / 10^6
+                 "population"]
 
   # Expression de la consommation par habitant
   df <- df / pop
@@ -67,7 +67,7 @@ df_control <- function(donnees, debut, fin) {
 
   # Séries de la consommation et du revenu: expression par tête
   pop <- data_sub[rownames(data_sub) >= debut & rownames(data_sub) <= fin,
-                  "population"] / 10^6
+                  "population"]
   data_sub["conso"] <- data_sub["conso"] / pop
   data_sub["revenu"] <- data_sub["revenu"] / pop
 

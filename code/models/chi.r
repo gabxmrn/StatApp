@@ -34,8 +34,6 @@ data_us_new_var <- data_us_new_var %>%
 data_us_new_var <- data_us_new_var %>%
   mutate(across(c(chomage, diff_taux_ct, conso_growth,spread , confiance,income_growth,delta_log_c), ~ lag(.x, n = 1), .names = "lag1_{.col}"))
 
-print(head(data_us_new_var))
-
 #première régression sur les variables instrumentales, pour faire la reg IV de Delta log ct sur son lag t-1
 model_IV <- lm(lag1_delta_log_c ~ lag2_chomage + lag2_diff_taux_ct + lag2_spread + lag2_conso_growth + lag2_confiance + lag2_income_growth, data = data_us_new_var, na.action = na.omit)
 
@@ -52,14 +50,11 @@ data_us_new_var$predicted_lag1_delta_log_c <- predict(model_IV, newdata = new_da
 
 #régression finale
 model <- lm(delta_log_c ~ predicted_lag1_delta_log_c, data = data_us_new_var, na.action = na.omit)
-print(summary(model))
-
 
 #Essai avec une IV reg intégrée (les deux donnent les memes chi sur fr et us)
 library(AER)  # Load the package for ivreg
 
 iv_model <- ivreg(delta_log_c ~ lag1_delta_log_c | lag2_chomage + lag2_diff_taux_ct + lag2_spread + lag2_conso_growth + lag2_confiance + lag2_income_growth, data = data_us_new_var, na.action = na.omit)
-print(summary(iv_model))
 
 chi <- coef(iv_model)["lag1_delta_log_c"]
 
