@@ -3,8 +3,8 @@ source("code/utils/data_treatment.R")
 source("code/utils/graphs.R")
 source("code/utils/test_correlation.R")
 source("code/utils/stationarity.R")
-source("code/utils/chi.R")
-source("code/utils/PMC.R")
+source("code/models/chi.R")
+source("code/models/PMC.R")
 
 ###### Importation des données ######
 data_fr <- excel_import("code/data.xlsx", "France")
@@ -16,37 +16,28 @@ date_debut <- "1998-12-01"
 date_fin <- "2023-03-01"
 
 # richesse_fr <- df_richesse(data_fr, date_debut, date_fin, 1)
-# png("richesse_fr.png", width = 500, height = 600)
 # plot_richesse(richesse_fr, "France")
-# dev.off()
 
-richesse_us <- df_richesse(data_us, date_debut, date_fin, 1)
-plot_richesse(richesse_us, "US")
-head(richesse_us)
+# richesse_us <- df_richesse(data_us, date_debut, date_fin, 1)
+# plot_richesse(richesse_us, "US")
 
 ###### Données - Variable explicative ######
 
 # consommation_fr <- df_consommation(data_fr, date_debut, date_fin)
-# png("conso_fr.png", width = 800, height = 400)
 # plot_consommation(consommation_fr, "France")
-# dev.off()
 # cor_conso(consommation_fr, "France")
 
-#consommation_us <- df_consommation(data_us, date_debut, date_fin, TRUE)
-#plot_consommation(consommation_us, "US")
-#cor_conso(consommation_us, "US")
+# consommation_us <- df_consommation(data_us, date_debut, date_fin)
+# plot_consommation(consommation_us, "US")
+# cor_conso(consommation_us, "US")
 
 ###### Données - Variables de contrôles ######
 
 # var_control_fr <- df_control(data_fr, date_debut, date_fin)
-# png("varcontrol_fr.png", width = 800, height = 600)
 # visualisation_controles(var_control_fr, "France")
-# dev.off()
 
 # var_control_us <- df_control(data_us, date_debut, date_fin)
-# png("varcontrol_us.png", width = 800, height = 600)
 # visualisation_controles(var_control_us, "US")
-# dev.off()
 
 ###### Tests de stationnarité ######
 
@@ -57,7 +48,9 @@ head(richesse_us)
 #stationarite(richesse_us)
 #stationarite(consommation_us)
 
-chi <- chi(data_us,1)["chi"]
+###### Modélisation ######
+
+chi <- chi(data_us, 1)["chi"]
 print(chi$chi)
 
 #PMC <- PMC(data_fr,1)

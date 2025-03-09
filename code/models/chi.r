@@ -1,20 +1,15 @@
-install.packages("dplyr")
-
-#print(head(data_us))
-
-#by est utilisée pour prendre les données en annuelles (4) ou quarterly (1)
 
 #data_us_new_var n'est pas utilisé que pour les US
 #c'est une ancienne notation
 
-chi <- function(df,by){
+chi <- function(df, freq) {
 
 #to get lag function
 library(dplyr)
 
 
 #df des nouvelles variables
-data_us_new_var <- df[seq(1, nrow(df), by = by),]
+data_us_new_var <- df[seq(1, nrow(df), by = freq), ]
 
 #ajout spread et croissance conso et revenu, (correction par cpi nécessaire ? faite)
 data_us_new_var <- data_us_new_var %>%
@@ -61,7 +56,6 @@ model <- lm(delta_log_c ~ predicted_lag1_delta_log_c, data = data_us_new_var, na
 
 
 #Essai avec une IV reg intégrée (les deux donnent les memes chi sur fr et us)
-install.packages("AER")  # Install the package (only needed once)
 library(AER)  # Load the package for ivreg
 
 iv_model <- ivreg(delta_log_c ~ lag1_delta_log_c | lag2_chomage + lag2_diff_taux_ct + lag2_spread + lag2_conso_growth + lag2_confiance + lag2_income_growth, data = data_us_new_var, na.action = na.omit)
