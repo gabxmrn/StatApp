@@ -7,13 +7,23 @@ source("code/models/chi.R")
 source("code/models/PMC.R")
 
 ###### Importation des données ######
-data_fr <- excel_import("code/data.xlsx", "France")
-data_us <- excel_import("code/data.xlsx", "US")
+data_fr <- excel_import("code/data_modif.xlsx", "France")
+#data_us <- excel_import("code/data_modif.xlsx", "US")
+
+###### Saisonnalité ######
+
+# Consommation française
+ts_conso_fr <- ts(data_fr["conso"], start = c(1995, 12), frequency = 4)
+data_fr["conso"] <- X13(ts_conso_fr)
+
+# Revenus français
+ts_income_fr <- ts(data_fr["revenu"], start = c(1995, 12), frequency = 4)
+data_fr["revenu"] <- X13(ts_conso_fr)
 
 ###### Données - Richesse ######
 
-date_debut <- "1998-12-01"
-date_fin <- "2023-03-01"
+# date_debut <- "1998-12-01"
+# date_fin <- "2023-03-01"
 
 # richesse_fr <- df_richesse(data_fr, date_debut, date_fin, 1)
 # plot_richesse(richesse_fr, "France")
@@ -50,7 +60,7 @@ date_fin <- "2023-03-01"
 
 ###### Modélisation ######
 
-chi <- chi(data_us, 1)["chi"]
+chi <- chi(data_fr, 1)["chi"]
 print(chi$chi)
 
 #PMC <- PMC(data_fr,1)

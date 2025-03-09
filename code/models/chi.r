@@ -52,7 +52,7 @@ data_us_new_var$predicted_lag1_delta_log_c <- predict(model_IV, newdata = new_da
 
 #régression finale
 model <- lm(delta_log_c ~ predicted_lag1_delta_log_c, data = data_us_new_var, na.action = na.omit)
-
+print(summary(model))
 
 
 #Essai avec une IV reg intégrée (les deux donnent les memes chi sur fr et us)
