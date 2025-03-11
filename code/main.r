@@ -58,10 +58,17 @@ data_fr["revenu"] <- X13(ts_conso_fr)
 # stationarite(richesse_us)
 # stationarite(consommation_us)
 
+data_us_old <- excel_import("code/data_us_70_04.xlsx", "Quarterly")
+
+library(dplyr)
+data_us_old$delta_log_c <- c(NA, diff(log(data_us_old$conso)))
+model <- lm(delta_log_c ~ lag(delta_log_c), data = data_us_old, na.action = na.omit)
+print(summary(model))
+
 ###### Modélisation ######
 
-# chi <- chi(data_fr, 1)["chi"]
-# print(chi$chi)
+chi <- chi(data_us, 1)["chi"]
+print(chi$chi)
 
 # Pour les US
 date_debut <- "1997-12-01"
@@ -75,5 +82,5 @@ date_fin <- "2023-03-01"
 # date_debut <- "2009-12-01"
 # date_fin <- "2024-06-01"
 
-PMC <- PMC(data_us, 1, date_debut, date_fin, FALSE)
+PMC <- PMC(data_us, 1, date_debut, date_fin, TRUE)
 print(PMC)

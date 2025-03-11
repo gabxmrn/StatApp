@@ -15,6 +15,8 @@ data_us_new_var <- df[seq(1, nrow(df), by = freq), ]
 data_us_new_var <- data_us_new_var %>%
   mutate(conso = conso/(population*cpi),
   revenu = revenu/(population*cpi),
+  taux_ct = (100 + taux_ct)/cpi - 1,
+  taux_lt = (100 + taux_lt)/cpi - 1,
     income_growth = (revenu - lag(revenu)) / lag(revenu) * 100,
   conso_growth = (conso - lag(conso)) / lag(conso) * 100)
 
