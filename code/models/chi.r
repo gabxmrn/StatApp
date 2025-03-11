@@ -59,6 +59,7 @@ library(AER)  # Load the package for ivreg
 iv_model <- ivreg(delta_log_c ~ lag1_delta_log_c | lag2_chomage + lag2_diff_taux_ct + lag2_spread + lag2_conso_growth + lag2_confiance + lag2_income_growth, data = data_us_new_var, na.action = na.omit)
 
 chi <- coef(iv_model)["lag1_delta_log_c"]
+print(summary(iv_model))
 
 #Pour le calcul ultérieur de la PMC (résidu de l'ivreg)
 residuals <- c(NA,NA,NA,as.vector(residuals(model)))

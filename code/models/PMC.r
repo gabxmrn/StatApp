@@ -64,17 +64,18 @@ PMC <- function(df, freq, date_debut, date_fin, chi_restricted = FALSE) {
       delta_barre_W = chi * (Delta_W + chi * Delta_W_t1 + chi^2 * Delta_W_t2 + chi^3 * Delta_W_t3)/lag(conso,4)
     )
 
-
   #Calcul de delta_C (p.20) et lag de toutes les variables
   data_us_new_var <- data_us_new_var %>%
     mutate(delta_C = (conso - lag(conso))/lag(conso,5)) %>%
-    mutate(across(c(delta_barre_W,chomage, diff_taux_ct,spread ,income_growth), ~ lag(.x, n = 1), .names = "lag1_{.col}"))
+    mutate(across(c(chomage, diff_taux_ct,spread ,income_growth), ~compute_weighted_sum_lag(.x,chi), .names = "acc_{.col}"))
+
+
 
   #régression de la p.20
-  model_2 <- lm(delta_C ~ lag1_delta_barre_W + lag1_income_growth + lag1_chomage + lag1_diff_taux_ct + lag1_spread, data = data_us_new_var, na.action = na.omit)
-  alpha_w <- coef(model_2)["lag1_delta_barre_W"]
-
+  model_2 <- lm(delta_C ~ lag(delta_barre_W) + acc_income_growth + acc_chomage + acc_diff_taux_ct + acc_spread, data = data_us_new_var, na.action = na.omit)
+  alpha_w <- coef(model_2)["lag(delta_barre_W)"]
   print(summary(model_2))
+
 
   # PMC immédiate
   PMC_imm <- alpha_w / chi

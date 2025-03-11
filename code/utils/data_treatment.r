@@ -107,3 +107,20 @@ df_control <- function(donnees, debut, fin) {
 
   return(variables_controle)
 }
+
+#Utilisée dans PMC.r pour traiter les variables de contrôle
+
+compute_weighted_sum_lag <- function(x, chi) {
+  print(x)
+  n <- length(x)
+  S <- numeric(n)  # Initialiser le vecteur résultant
+
+  for (t in 2:n) {
+    if(t==1){
+    S[t] <- NA
+  }else{
+    S[t] <- sum(x[2:(t-1)] * chi^((t-2):1))}
+  }
+  
+  return(S)
+}

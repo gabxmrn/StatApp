@@ -18,7 +18,7 @@ data_fr["conso"] <- X13(ts_conso_fr)
 
 # Revenus français
 ts_income_fr <- ts(data_fr["revenu"], start = c(1995, 12), frequency = 4)
-data_fr["revenu"] <- X13(ts_conso_fr)
+data_fr["revenu"] <- X13(ts_income_fr)
 
 ###### Données - Richesse ######
 
@@ -58,12 +58,15 @@ data_fr["revenu"] <- X13(ts_conso_fr)
 # stationarite(richesse_us)
 # stationarite(consommation_us)
 
+
+#Essai d'une régression sur la conso des années 70 à 04 aux US sans variables instrumentales
+
 data_us_old <- excel_import("code/data_us_70_04.xlsx", "Quarterly")
 
 library(dplyr)
 data_us_old$delta_log_c <- c(NA, diff(log(data_us_old$conso)))
 model <- lm(delta_log_c ~ lag(delta_log_c), data = data_us_old, na.action = na.omit)
-print(summary(model))
+#print(summary(model))
 
 ###### Modélisation ######
 
@@ -75,8 +78,8 @@ date_debut <- "1997-12-01"
 date_fin <- "2023-03-01"
 
 # Pour la France, immo 1
-# date_debut <- "1998-12-01"
-# date_fin <- "2023-03-01"
+#date_debut <- "1998-12-01"
+#date_fin <- "2023-03-01"
 
 # Pour la France, immo 2
 # date_debut <- "2009-12-01"
