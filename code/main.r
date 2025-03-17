@@ -8,7 +8,9 @@ source("code/models/PMC.R")
 
 ###### Importation des données ######
 data_fr <- excel_import("code/data_modif.xlsx", "France")
-data_us <- excel_import("code/data_modif.xlsx", "US")
+#data_us <- excel_import("code/data_modif.xlsx", "US")
+
+data_us <- excel_import("code/data_us_70_04.xlsx", "Quarterly")
 
 ###### Saisonnalité ######
 
@@ -85,5 +87,5 @@ date_fin <- "2023-03-01"
 # date_debut <- "2009-12-01"
 # date_fin <- "2024-06-01"
 
-PMC <- PMC(data_us, 1, date_debut, date_fin, TRUE)
-print(PMC)
+#PMC <- PMC(data_us, 1, date_debut, date_fin, TRUE)
+#print(PMC)

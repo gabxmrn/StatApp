@@ -13,10 +13,8 @@ data_us_new_var <- df[seq(1, nrow(df), by = freq), ]
 
 #ajout spread et croissance conso et revenu, (correction par cpi nécessaire ? faite)
 data_us_new_var <- data_us_new_var %>%
-  mutate(conso = conso/(population*cpi),
-  revenu = revenu/(population*cpi),
-  taux_ct = (100 + taux_ct)/cpi - 1,
-  taux_lt = (100 + taux_lt)/cpi - 1,
+  mutate(conso = conso/(population),
+  revenu = revenu/(population),
     income_growth = (revenu - lag(revenu)) / lag(revenu) * 100,
   conso_growth = (conso - lag(conso)) / lag(conso) * 100)
 
