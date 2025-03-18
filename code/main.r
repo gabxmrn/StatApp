@@ -8,9 +8,7 @@ source("code/models/PMC.R")
 
 ###### Importation des données ######
 data_fr <- excel_import("code/data_modif.xlsx", "France")
-#data_us <- excel_import("code/data_modif.xlsx", "US")
-
-data_us <- excel_import("code/data_us_70_04.xlsx", "Quarterly")
+data_us <- excel_import("code/data_modif.xlsx", "US")
 
 ###### Saisonnalité ######
 
@@ -71,8 +69,9 @@ model <- lm(delta_log_c ~ lag(delta_log_c), data = data_us_old, na.action = na.o
 #print(summary(model))
 
 ###### Modélisation ######
-
-chi <- chi(data_us, 1)["chi"]
+date_debut <- "1990-01-01"
+date_fin <- "1995-03-01"
+chi <- chi(data_us_old,date_debut,date_fin, 1)["chi"]
 print(chi$chi)
 
 # Pour les US

@@ -2,13 +2,14 @@
 #data_us_new_var n'est pas utilisé que pour les US
 #c'est une ancienne notation
 
-chi <- function(df, freq) {
+chi <- function(df, date_debut,date_fin,freq) {
 
 #to get lag function
 library(dplyr)
 
 
 #df des nouvelles variables
+df <- df[rownames(df) >= date_debut & rownames(df) <= date_fin, ]
 data_us_new_var <- df[seq(1, nrow(df), by = freq), ]
 
 #ajout spread et croissance conso et revenu, (correction par cpi nécessaire ? faite)
