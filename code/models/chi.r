@@ -58,13 +58,64 @@ library(AER)  # Load the package for ivreg
 iv_model <- ivreg(delta_log_c ~ lag1_delta_log_c | lag2_chomage + lag2_diff_taux_ct + lag2_spread + lag2_conso_growth + lag2_confiance + lag2_income_growth, data = data_us_new_var, na.action = na.omit)
 
 chi <- coef(iv_model)["lag1_delta_log_c"]
+
+coef_lag1 <- summary(iv_model)$coefficients["lag1_delta_log_c", 1]  # Coefficient
+std_lag1 <- summary(iv_model)$coefficients["lag1_delta_log_c", 2]   # Écart-type
+p_value_lag1 <- summary(iv_model)$coefficients["lag1_delta_log_c", 4]   # p-value
 print(summary(iv_model))
 
 #Pour le calcul ultérieur de la PMC (résidu de l'ivreg)
 residuals <- c(NA,NA,NA,as.vector(residuals(model)))
 
-result <- list(chi = chi, residuals = residuals)
+result <- list(chi = coef_lag1, std_chi = std_lag1, p_value = p_value_lag1, residuals = residuals)
 
 return(result)
+
+}
+
+#Fonction pour le tracé de chi en fonction du temps
+#memes entrées que chi avec maille longueur de la plage temporelle de calcul
+plot_chi <- function(df,maille, date_debut, date_fin,freq){
+
+source("code/models/chi.R")
+
+library(lubridate)
+library(ggplot2)
+
+step <- "1 year" #pas du graphique
+window <- maille #longueur de la plage temporelle
+resultats <- data.frame(Annee = numeric(), Valeur = numeric(), Ecart_Type = numeric())
+
+#Construction des plages d'années pour les calculs
+for (annee in seq.Date(as.Date(date_debut), as.Date(date_fin) - years(window), by = step)) {
+  debut <- as.Date(annee)
+  fin <- as.Date(annee) + years(window)
+  
+#Construction du tableau de valeurs pour le plot (chi, écart-type et p value de la fonction chi)
+  valeur <- chi(df,debut, fin,freq)["chi"]
+  ecart_type <- chi(df,debut, fin,freq)["std_chi"]
+  p_value <- chi(df,debut, fin,freq)["p_value"]
+  
+  # Stocker les résultats
+  resultats <- rbind(resultats, data.frame(Annee = as.Date(annee) + years(window%/%2), Valeur = valeur, Ecart_Type = ecart_type, p_values = p_value))
+}
+
+print(resultats)
+
+#coefficient pour l'intervalle de confiance à 95%
+coef_IC <- 1.96 / sqrt(3*window)
+
+# Tracer le graphique avec ggplot2
+plot <- ggplot(resultats, aes(x = Annee, y = chi)) +
+  geom_point(color = "blue", size = 3) +  # Points des valeurs
+  geom_errorbar(aes(ymin = chi - coef_IC*std_chi, ymax = chi + coef_IC*std_chi), width = 0.5, color = "red") +
+  geom_text(aes(label = paste("p-value:", round(as.numeric(p_value),4))), 
+            hjust = -0.1, vjust = -0.5, size = 4, color = "black") +
+  labs(title = "Évolution de la valeur avec barres d'erreur",
+       x = "Année de milieu de la plage",
+       y = "Chi estimé") +
+  theme_minimal()
+
+print(plot)
 
 }

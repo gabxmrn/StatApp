@@ -69,14 +69,21 @@ model <- lm(delta_log_c ~ lag(delta_log_c), data = data_us_old, na.action = na.o
 #print(summary(model))
 
 ###### Modélisation ######
-date_debut <- "1990-01-01"
-date_fin <- "1995-03-01"
+date_debut <- "1975-01-01"
+date_fin <- "2004-03-01"
 chi <- chi(data_us_old,date_debut,date_fin, 1)["chi"]
 print(chi$chi)
 
-# Pour les US
+plot_chi(data_us_old,12,date_debut, date_fin,1)
+
+# Pour les valeurs récentes
 date_debut <- "1997-12-01"
-date_fin <- "2023-03-01"
+date_fin <- "2019-03-01"
+plot_chi(data_us,12,date_debut,date_fin,1)
+chi2 <- chi(data_us,date_debut,date_fin, 1)["chi"]
+print(chi2["chi"])
+
+
 
 # Pour la France, immo 1
 #date_debut <- "1998-12-01"
