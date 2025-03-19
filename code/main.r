@@ -10,6 +10,9 @@ source("code/models/PMC.R")
 data_fr <- excel_import("code/data_modif.xlsx", "France")
 data_us <- excel_import("code/data_modif.xlsx", "US")
 
+#données des US de 1970 à 2004
+data_us_old <- excel_import("code/data_us_70_04.xlsx", "Quarterly")
+
 ###### Saisonnalité ######
 
 # Consommation française
@@ -61,15 +64,13 @@ data_fr["revenu"] <- X13(ts_income_fr)
 
 #Essai d'une régression sur la conso des années 70 à 04 aux US sans variables instrumentales
 
-data_us_old <- excel_import("code/data_us_70_04.xlsx", "Quarterly")
-
-library(dplyr)
-data_us_old$delta_log_c <- c(NA, diff(log(data_us_old$conso)))
-model <- lm(delta_log_c ~ lag(delta_log_c), data = data_us_old, na.action = na.omit)
+#library(dplyr)
+#data_us_old$delta_log_c <- c(NA, diff(log(data_us_old$conso)))
+#model <- lm(delta_log_c ~ lag(delta_log_c), data = data_us_old, na.action = na.omit)
 #print(summary(model))
 
 ###### Modélisation ######
-date_debut <- "1975-01-01"
+date_debut <- "1970-01-01"
 date_fin <- "2004-03-01"
 chi <- chi(data_us_old,date_debut,date_fin, 1)["chi"]
 print(chi$chi)
@@ -78,6 +79,7 @@ plot_chi(data_us_old,12,date_debut, date_fin,1)
 
 # Pour les valeurs récentes
 date_debut <- "1997-12-01"
+#troncature en 2019 pour éviter les données COVID
 date_fin <- "2019-03-01"
 plot_chi(data_us,12,date_debut,date_fin,1)
 chi2 <- chi(data_us,date_debut,date_fin, 1)["chi"]

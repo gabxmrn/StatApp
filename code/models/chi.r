@@ -62,7 +62,7 @@ chi <- coef(iv_model)["lag1_delta_log_c"]
 coef_lag1 <- summary(iv_model)$coefficients["lag1_delta_log_c", 1]  # Coefficient
 std_lag1 <- summary(iv_model)$coefficients["lag1_delta_log_c", 2]   # Écart-type
 p_value_lag1 <- summary(iv_model)$coefficients["lag1_delta_log_c", 4]   # p-value
-print(summary(iv_model))
+#print(summary(iv_model))
 
 #Pour le calcul ultérieur de la PMC (résidu de l'ivreg)
 residuals <- c(NA,NA,NA,as.vector(residuals(model)))
@@ -103,14 +103,17 @@ for (annee in seq.Date(as.Date(date_debut), as.Date(date_fin) - years(window), b
 print(resultats)
 
 #coefficient pour l'intervalle de confiance à 95%
-coef_IC <- 1.96 / sqrt(3*window)
+coef_IC <- 1.96 / sqrt((4*window)/freq)
+moyenne_chi <- mean(resultats$chi, na.rm = TRUE)
 
 # Tracer le graphique avec ggplot2
 plot <- ggplot(resultats, aes(x = Annee, y = chi)) +
   geom_point(color = "blue", size = 3) +  # Points des valeurs
-  geom_errorbar(aes(ymin = chi - coef_IC*std_chi, ymax = chi + coef_IC*std_chi), width = 0.5, color = "red") +
+  geom_errorbar(aes(ymin = chi - coef_IC*std_chi, ymax = chi + coef_IC*std_chi), width = 0.5, color = "black") +
   geom_text(aes(label = paste("p-value:", round(as.numeric(p_value),4))), 
             hjust = -0.1, vjust = -0.5, size = 4, color = "black") +
+  geom_hline(yintercept = moyenne_chi, linetype = "dashed", color = "red", size = 1) +
+  geom_smooth(method = "loess", se = TRUE, color = "purple", fill = "lightgray", size = 1.2) +  # Courbe approximative, utilise une régression LOESS (Local Polynomial Regression)
   labs(title = "Évolution de la valeur avec barres d'erreur",
        x = "Année de milieu de la plage",
        y = "Chi estimé") +
