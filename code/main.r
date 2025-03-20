@@ -7,21 +7,21 @@ source("code/models/chi.R")
 source("code/models/PMC.R")
 
 ###### Importation des données ######
-data_fr <- excel_import("code/data_modif.xlsx", "France")
-data_us <- excel_import("code/data_modif.xlsx", "US")
+# data_fr <- excel_import("code/data.xlsx", "France")
+data_us <- excel_import("code/data.xlsx", "US")
 
 #données des US de 1970 à 2004
-data_us_old <- excel_import("code/data_us_70_04.xlsx", "Quarterly")
+# data_us_old <- excel_import("code/data_us_70_04.xlsx", "Quarterly")
 
 ###### Saisonnalité ######
 
 # Consommation française
-ts_conso_fr <- ts(data_fr["conso"], start = c(1995, 12), frequency = 4)
-data_fr["conso"] <- X13(ts_conso_fr)
+# ts_conso_fr <- ts(data_fr["conso"], start = c(1995, 12), frequency = 4)
+# data_fr["conso"] <- X13(ts_conso_fr)
 
-# Revenus français
-ts_income_fr <- ts(data_fr["revenu"], start = c(1995, 12), frequency = 4)
-data_fr["revenu"] <- X13(ts_income_fr)
+# # Revenus français
+# ts_income_fr <- ts(data_fr["revenu"], start = c(1995, 12), frequency = 4)
+# data_fr["revenu"] <- X13(ts_income_fr)
 
 ###### Données - Richesse ######
 
@@ -60,7 +60,7 @@ data_fr["revenu"] <- X13(ts_income_fr)
 
 # stationarite(richesse_us)
 # stationarite(consommation_us)
-
+# stationarite(var_control_us)
 
 #Essai d'une régression sur la conso des années 70 à 04 aux US sans variables instrumentales
 
@@ -72,18 +72,18 @@ data_fr["revenu"] <- X13(ts_income_fr)
 ###### Modélisation ######
 date_debut <- "1970-01-01"
 date_fin <- "2004-03-01"
-chi <- chi(data_us_old,date_debut,date_fin, 1)["chi"]
+chi <- chi(data_us, date_debut, date_fin, 1)["chi"]
 print(chi$chi)
 
-plot_chi(data_us_old,12,date_debut, date_fin,1)
+# plot_chi(data_us_old,12,date_debut, date_fin,1)
 
-# Pour les valeurs récentes
-date_debut <- "1997-12-01"
-#troncature en 2019 pour éviter les données COVID
-date_fin <- "2019-03-01"
-plot_chi(data_us,12,date_debut,date_fin,1)
-chi2 <- chi(data_us,date_debut,date_fin, 1)["chi"]
-print(chi2["chi"])
+# # Pour les valeurs récentes
+# date_debut <- "1997-12-01"
+# #troncature en 2019 pour éviter les données COVID
+# date_fin <- "2019-03-01"
+# plot_chi(data_us,12,date_debut,date_fin,1)
+# chi2 <- chi(data_us,date_debut,date_fin, 1)["chi"]
+# print(chi2["chi"])
 
 
 
