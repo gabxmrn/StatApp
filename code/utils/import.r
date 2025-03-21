@@ -10,13 +10,3 @@ excel_import <- function(chemin, feuille) {
 
   return(df)
 }
-
-X13 <- function(df) {
-
-  library(seasonal)
-
-  adj_data <- seas(df)
-  deseasonalized_series <- final(adj_data)
-
-  return(deseasonalized_series)
-}

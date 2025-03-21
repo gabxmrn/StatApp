@@ -1,3 +1,45 @@
+richesse_immo <- function(df, country) {
+  # Fonction pour répliquer la richesse immobilière
+  # Méthode: Slacalek
+  # HW = sf * (DS * N) * HP avec DS: dwelling stocks per capita
+  # sf = HW/FW * FW avec HW/FW: ratio fixe
+
+  # Facteur d'échelle
+  #! Problème: comprends pas la méthode de calcul
+  if (country == "US") {
+    sf <- 1
+  } else if (country == "France") {
+    sf <- 1
+  } else {
+    stop("Erreur : Veuillez indiquer un pays valide")
+  }
+
+  # Séries de données
+  dwelling_stock <- df[, "dwelling stocks"]
+  housing_price <- df[, "RHP"]
+
+  # Compute housing wealth
+  # Dwelling exprimé en million donc pas besoin de multiplier par la pop
+  hw <- sf * dwelling_stock * housing_price
+
+  # Add housing wealth to df
+  df["immo_slac"] <- hw
+
+  return(df)
+}
+
+X13 <- function(df) {
+  # Fonction pour désaisonnaliser des séries de données
+  # Méthode: X-13 ARIMA du Census Bureau (US Gov)
+
+  library(seasonal)
+
+  adj_data <- seas(df)
+  deseasonalized_series <- final(adj_data)
+
+  return(deseasonalized_series)
+}
+
 df_richesse <- function(donnees, debut, fin, serie_immo) {
 
   # Sélection de la série à utiliser pour le patrimoine
