@@ -111,7 +111,6 @@ df_control <- function(donnees, debut, fin) {
 #Utilisée dans PMC.r pour traiter les variables de contrôle
 
 compute_weighted_sum_lag <- function(x, chi) {
-  print(x)
   n <- length(x)
   S <- numeric(n)  # Initialiser le vecteur résultant
 

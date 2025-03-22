@@ -82,7 +82,7 @@ source("code/models/chi.R")
 library(lubridate)
 library(ggplot2)
 
-step <- "1 year" #pas du graphique
+step <- "1 month" #pas du graphique
 window <- maille #longueur de la plage temporelle
 resultats <- data.frame(Annee = numeric(), Valeur = numeric(), Ecart_Type = numeric())
 
