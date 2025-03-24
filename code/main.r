@@ -7,10 +7,16 @@ source("code/models/chi.R")
 source("code/models/PMC.R")
 
 ###### Importation des données ######
-# data_fr <- excel_import("code/data.xlsx", "France")
+
+# Jeux de données
+data_fr <- excel_import("code/data.xlsx", "France")
 data_us <- excel_import("code/data.xlsx", "US")
 
-#données des US de 1970 à 2004
+# Calcul du patrimoine immobilier selon Slacalek
+data_fr <- richesse_immo_slacalek(data_fr, "France")
+data_us <- richesse_immo_slacalek(data_us, "US")
+
+#données des US de 1970 à 2004 -> intégré dans la base classique
 # data_us_old <- excel_import("code/data_us_70_04.xlsx", "Quarterly")
 
 ###### Saisonnalité ######
@@ -25,14 +31,14 @@ data_us <- excel_import("code/data.xlsx", "US")
 
 ###### Données - Richesse ######
 
-# date_debut <- "1997-12-01"
-# date_fin <- "2023-12-01"
+date_debut <- "1997-12-01"
+date_fin <- "2023-12-01"
 
-# richesse_fr <- df_richesse(data_fr, date_debut, date_fin, 1)
+# richesse_fr <- df_richesse(data_fr, date_debut, date_fin, 3)
 # plot_richesse(richesse_fr, "France")
 
-# richesse_us <- df_richesse(data_us, date_debut, date_fin, 1)
-# plot_richesse(richesse_us, "US")
+richesse_us <- df_richesse(data_us, date_debut, date_fin, 1)
+plot_richesse(richesse_us, "US")
 
 ###### Données - Variable explicative ######
 
@@ -70,10 +76,10 @@ data_us <- excel_import("code/data.xlsx", "US")
 #print(summary(model))
 
 ###### Modélisation ######
-date_debut <- "1970-01-01"
-date_fin <- "2004-03-01"
-chi <- chi(data_us, date_debut, date_fin, 1)["chi"]
-print(chi$chi)
+# date_debut <- "1970-01-01"
+# date_fin <- "2004-03-01"
+# chi <- chi(data_us, date_debut, date_fin, 1)["chi"]
+# print(chi$chi)
 
 #plot_chi(data_us_old,12,date_debut, date_fin,1)
 
