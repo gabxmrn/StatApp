@@ -1,28 +1,29 @@
-richesse_immo <- function(df, country) {
+richesse_immo_slacalek <- function(df, country) {
   # Fonction pour répliquer la richesse immobilière
   # Méthode: Slacalek
   # HW = sf * (DS * N) * HP avec DS: dwelling stocks per capita
-  # sf = HW/FW * FW avec HW/FW: ratio fixe
 
   # Facteur d'échelle
-  #! Problème: comprends pas la méthode de calcul
+  # sf = HW/FW * FW avec HW/FW: ratio fixe
+  # Valeurs de HW et FW prise des comptes nationaux annuels 2010
+  # Exprimé en millions
   if (country == "US") {
-    sf <- 1
+    sf <- 9031766
   } else if (country == "France") {
-    sf <- 1
+    sf <- 3073655
   } else {
     stop("Erreur : Veuillez indiquer un pays valide")
   }
 
   # Séries de données
   dwelling_stock <- df[, "dwelling stocks"]
-  housing_price <- df[, "RHP"]
+  housing_price <- df[, "RHP"] / 100
 
-  # Compute housing wealth
+  # Calcul du patrimoine immobilier
   # Dwelling exprimé en million donc pas besoin de multiplier par la pop
   hw <- sf * dwelling_stock * housing_price
 
-  # Add housing wealth to df
+  # Ajout au dataset
   df["immo_slac"] <- hw
 
   return(df)
@@ -47,6 +48,8 @@ df_richesse <- function(donnees, debut, fin, serie_immo) {
     nom_immo <- "immo_1"
   } else if (serie_immo == 2) {
     nom_immo <- "immo_2"
+  } else if (serie_immo == 3) {
+    nom_immo <- "immo_slac"
   } else {
     stop("Erreur : serie_immo doit être 1 ou 2")
   }
@@ -73,7 +76,6 @@ df_richesse <- function(donnees, debut, fin, serie_immo) {
 
   return(df)
 }
-
 
 df_consommation <- function(donnees, debut, fin) {
 
