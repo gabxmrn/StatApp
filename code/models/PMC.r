@@ -129,7 +129,7 @@ plot <- ggplot(resultats, aes(x = Annee, y = Valeur)) +
   geom_errorbar(aes(ymin = Valeur - coef_IC*std, ymax = Valeur + coef_IC*std), width = 0.5, color = "black") +
   #geom_text(aes(label = paste("p-value:", round(as.numeric(p_value),4))), 
   #          hjust = -0.1, vjust = -0.5, size = 4, color = "black") +
-  geom_hline(yintercept = moyenne_chi, linetype = "dashed", color = "red", size = 1) +
+  geom_hline(yintercept = moyenne_PMC, linetype = "dashed", color = "red", size = 1) +
   geom_smooth(method = "loess", se = TRUE, color = "purple", fill = "lightgray", size = 1.2) +  # Courbe approximative, utilise une régression LOESS (Local Polynomial Regression)
   labs(title = "Évolution de la valeur avec barres d'erreur",
        x = "Année de milieu de la plage",

@@ -81,7 +81,7 @@ plot_chi <- function(df, maille, date_debut, date_fin, freq) {
   library(lubridate)
   library(ggplot2)
 
-step <- "1 month" #pas du graphique
+step <- "1 year" #pas du graphique
 window <- maille #longueur de la plage temporelle
 resultats <- data.frame(Annee = numeric(), Valeur = numeric(), Ecart_Type = numeric())
 
@@ -105,11 +105,15 @@ resultats <- data.frame(Annee = numeric(), Valeur = numeric(), Ecart_Type = nume
 
   # Tracer le graphique avec ggplot2
   plot <- ggplot(resultats, aes(x = Annee, y = chi)) +
+    geom_segment(aes(x = Annee - years(window%/%2), xend = Annee + years(window%/%2), y = chi, yend = chi), color = "gray40", size = 1.2) +  # Barre temporelle
     geom_point(color = "blue", size = 3) +  # Points des valeurs
-    geom_errorbar(aes(ymin = chi - coef_IC*std_chi, ymax = chi + coef_IC*std_chi), width = 0.5, color = "black") +
+    #geom_errorbar(aes(ymin = chi - coef_IC*std_chi, ymax = chi + coef_IC*std_chi), width = 0.5, color = "black") +
     geom_text(aes(label = paste("p-value:", round(as.numeric(p_value),4))), 
               hjust = -0.1, vjust = -0.5, size = 4, color = "black") +
     geom_hline(yintercept = moyenne_chi, linetype = "dashed", color = "red", size = 1) +
+    annotate("text", x = min(resultats$Annee) - 2000, y = moyenne_chi + 0.005, 
+           label = paste(round(moyenne_chi, 2)), 
+           vjust = 0, hjust = 1.2, size = 5, color = "red", fontface = "bold") +
     geom_smooth(method = "loess", se = TRUE, color = "purple", fill = "lightgray", size = 1.2) +  # Courbe approximative, utilise une régression LOESS (Local Polynomial Regression)
     labs(title = "Évolution de la valeur avec barres d'erreur",
         x = "Année de milieu de la plage",

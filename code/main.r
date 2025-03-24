@@ -75,13 +75,13 @@ date_fin <- "2004-03-01"
 chi <- chi(data_us, date_debut, date_fin, 1)["chi"]
 print(chi$chi)
 
-plot_chi(data_us_old,12,date_debut, date_fin,1)
+#plot_chi(data_us_old,12,date_debut, date_fin,1)
 
 # Pour les valeurs récentes
-date_debut <- "1997-12-01"
+date_debut <- "1970-12-01"
 #troncature en 2019 pour éviter les données COVID
 date_fin <- "2019-03-01"
-plot_chi(data_us,12,date_debut,date_fin,1)
+plot_chi(data_us,20,date_debut,date_fin,1)
 chi2 <- chi(data_us,date_debut,date_fin, 1)["chi"]
 print(chi2["chi"])
 
@@ -98,4 +98,5 @@ print(chi2["chi"])
 PMC <- PMC(data_us, 1, date_debut, date_fin, FALSE)
 print(PMC)
 
-plot_PMC(data_us,15,date_debut,date_fin,1,TRUE)
+
+#plot_PMC(data_us,20,date_debut,date_fin,1,TRUE)
