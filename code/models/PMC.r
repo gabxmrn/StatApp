@@ -3,12 +3,13 @@
 #probablement encore un problème dans les données de richesse us
 #et aussi un peut etre un problème de date dans la fusion de data_us_new_var et richesse_us
 
-PMC <- function(df, freq, date_debut, date_fin, chi_restricted = FALSE) {
-
-  source("code/models/chi.R")
-  source("code/utils/data_treatment.R")
+PMC <- function(df, freq, date_debut, date_fin, methode_immo, chi_restricted = FALSE) {
 
   library(dplyr)
+  library(here)
+
+  source(here("code/models/chi.R"))
+  source(here("code/utils/data_treatment.R"))
 
   #df des nouvelles variables
   data_us_new_var <- df[seq(1, nrow(df), by = freq), ]
@@ -30,8 +31,8 @@ PMC <- function(df, freq, date_debut, date_fin, chi_restricted = FALSE) {
 
 
   #obtenir delta W_t
-  richesse_us <- df_richesse(df, date_debut, date_fin, 1)
-  data_us_new_var$wealth <- richesse_us[seq(1, nrow(df), by = freq), "totale"]
+  richesse_us <- df_richesse(df, date_debut, date_fin, methode_immo)
+  data_us_new_var$wealth <- richesse_us[seq(1, nrow(df), by = freq), "pat_total"]
   #data_us_new_var$epsilon <- epsilon
   # data_us_new_var <- data_us_new_var %>%
   #   mutate(delta_W = (wealth - lag(wealth))/ lag(conso))

@@ -76,10 +76,12 @@ chi <- function(df, date_debut, date_fin, freq) {
 #memes entrées que chi avec maille longueur de la plage temporelle de calcul
 plot_chi <- function(df, maille, date_debut, date_fin, freq) {
 
-  source("code/models/chi.R")
-
   library(lubridate)
   library(ggplot2)
+  library(here)
+
+  source(here("code/models/chi.R"))
+
 
 step <- "1 year" #pas du graphique
 window <- maille #longueur de la plage temporelle

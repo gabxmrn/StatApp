@@ -56,7 +56,7 @@ Cette option peut être outrepassée dans le morceau de code _select_dates_. Dan
 ```{r select_params, include=TRUE}
 
 # Paramètres du modèle
-pays <- "France" # France, US, UK, Italie, Espagne
+pays <- "Espagne" # France, US, UK, Italie, Espagne
 methode_immo <- "1" # 1, 2, slac
 ```
 
@@ -101,7 +101,7 @@ if (pays == "France") {
 } else if (pays == "US") {
   date_debut <- "1970-01-01"
   ###
-} else if (pays == "GB") {
+} else if (pays == "UK") {
   if (methode_immo == "1") {
     date_debut <- "1995-01-01"
   } else {
@@ -134,6 +134,7 @@ if (pays == "France") {
 
 # Importation
 data <- excel_import(here("code/data.xlsx"), pays)
+data <- data[rownames(data) >= date_debut & rownames(data) <= date_fin,]
 
 # Calcul du patrimoine immobilier avec la méthode de Slacalek
 data <- richesse_immo_slacalek(data, pays)
@@ -256,4 +257,29 @@ stationarite(var_control)
 
 ### Calcul de la persistance de la consommation, chi
 
+Calcul de la persistance de la consommation. Le paramètre "freq" correspond à la périodicité utilisée dans l'estimation (trimestrielle = 1, annuelle = 4).
+
+```{r chi, include=TRUE}
+
+chi <- chi(data, date_debut, date_fin, freq = 1)["chi"]
+print(chi)
+
+plot_chi(data, 20, date_debut, date_fin, 1)
+```
+
 ### Calcul des PMC (immédiate et éventuelle)
+
+```{r pmc, include=TRUE}
+
+# Chi = vraie valeur
+PMC_unres <- PMC(data, 1, date_debut, date_fin, methode_immo, FALSE)
+cat("\nPMC immédiate:", PMC_unres[[1]], "\n")
+cat("PMC éventuelle:", PMC_unres[[2]], "\n")
+
+# Chi = 0.6
+PMC_res <- PMC(data, 1, date_debut, date_fin, methode_immo, TRUE)
+print("Résultats contraints avec chi=0.6")
+cat("\nPMC immédiate:", PMC_res[[1]], "\n")
+cat("PMC éventuelle:", PMC_res[[2]], "\n")
+
+```
