@@ -1,0 +1,259 @@
+---
+title: "Analyse des effets de richesse des ménages"
+subtitle: "Projet de statistiques appliquées"
+author: "Mohamed Mahmoud El Ghaouth, Cyprien Mathé, Gabrielle Morin et Jame Valette"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    toc_float: false
+    code_folding: show
+---
+
+```{r source, include=FALSE}
+library(here)
+library(knitr)
+library(kableExtra)
+library(dplyr)
+
+# Importation des fonctions à utiliser
+source(here("code/utils/import.R"))
+source(here("code/utils/data_treatment.R"))
+source(here("code/utils/graphs.R"))
+source(here("code/utils/test_correlation.R"))
+source(here("code/utils/stationarity.R"))
+source(here("code/models/chi.R"))
+source(here("code/models/PMC.R"))
+```
+
+## Jeux de données
+
+### Sélection des paramètres de l'estimation
+
+Liste des pays disponibles avec les dates d'estimation et la méthode d'estimation du patrimoine immobilier:
+
+* France:
+  * Jeux 1 (données des comptes nationaux): 1995 Q1 - 2023 Q1
+  * Jeux 2 (données de la Banque de France): 2009 Q4 - 2023 Q1
+  * Jeux 3 (données slacalek): 1982 Q1 - 2023 Q1 
+* Etats-Unis:
+  * Jeux 1 (données des comptes nationaux): 1970 Q1 - 2023 Q4
+  * Jeux 2 (données slacalek): 1970 Q1 - 2023 Q4
+* Royaume-Uni:
+  * Jeux 1 (données des comptes nationaux):  1995 Q1 - 2023 Q1
+  * Jeux 2 (données slacalek): 1987 Q1 - 2024 Q3
+* Italie:
+  * Jeux 1 (données des comptes nationaux): 1999 Q1 - 2023 Q1 
+  * Jeux 2 (données slacalek): 1999 Q1 - 2017 Q1
+* Espagne:
+  * Jeux 1 (données des comptes nationaux): 1999 Q1 - 2022 Q1
+  * Jeux 2 (données slacalek): 2001 Q1 - 2023 Q1
+
+Les dates sont sélectionnées de manière automatique. Elles correspondent à une date de début définie ci-dessus et une date de fin fixe (Q4 2019) excepté pour l'Italie quand on utilise la méthode Slacalek pour estimer la richesse immobilière (Q1 2017).
+
+Cette option peut être outrepassée dans le morceau de code _select_dates_. Dans ce cas, entrez les dates dans le format "aaaa-mm-01", avec "mm" le mois de début du trimestre (Q1: 01, Q2: 04, Q3: 07, Q4: 10).
+
+```{r select_params, include=TRUE}
+
+# Paramètres du modèle
+pays <- "France" # France, US, UK, Italie, Espagne
+methode_immo <- "1" # 1, 2, slac
+```
+
+```{r check_params, include=FALSE}
+
+# Vérification du paramètre: pays
+if (pays != "France" &&
+      pays != "US" &&
+      pays != "UK" &&
+      pays != "Italie" &&
+      pays != "Espagne") {
+  stop("Erreur: Sélectionner un pays disponible.")
+}
+
+# Vérification du paramètre: methode_immo
+if (pays != "France") {
+  if (methode_immo != "1" && methode_immo != "slack") {
+    stop("Erreur: Méthode de calcul du patrimoine immo doit être 1 ou slac.")
+  }
+} else {
+  if (methode_immo != "1" && methode_immo != "2" && methode_immo != "slac") {
+    stop("Erreur: Méthode de calcul du patrimoine immo doit être 1, 2 ou slac.")
+  }
+}
+
+```
+
+```{r select_dates, include=FALSE}
+
+date_fin <- "2019-10-01"
+
+# Choix des paramètres: date_debut et date_fin
+if (pays == "France") {
+  if (methode_immo == "1") {
+    date_debut <- "1995-01-01"
+  } else if (methode_immo == "2") {
+    date_debut <- "2009-10-01"
+  } else {
+    date_debut <- "1982-01-01"
+  }
+  ###
+} else if (pays == "US") {
+  date_debut <- "1970-01-01"
+  ###
+} else if (pays == "GB") {
+  if (methode_immo == "1") {
+    date_debut <- "1995-01-01"
+  } else {
+    date_debut <- "1987-01-01"
+  }
+  ###
+} else if (pays == "Italie") {
+  date_debut <- "1999-01-01"
+  if (methode_immo == "slac") {
+    date_fin <- "2017-01-01"
+  }
+  ###
+} else if (pays == "Espagne") {
+  if (methode_immo == "1") {
+    date_debut <- "1999-01-01"
+  } else {
+    date_debut <- "2001-01-01"
+  }
+}
+
+# Sélection manuelle des dates
+# date_debut <- ""
+# date_fin <- ""
+
+```
+
+### Importation
+
+```{r load_data, include=TRUE}
+
+# Importation
+data <- excel_import(here("code/data.xlsx"), pays)
+
+# Calcul du patrimoine immobilier avec la méthode de Slacalek
+data <- richesse_immo_slacalek(data, pays)
+
+# Visualisation
+
+tab_00 <- data.frame(head(data))
+
+kable(tab_00,
+      digits = 2,
+      caption = "Visualisation des données")
+```
+
+### Saisonnalité
+
+Séries nécessitant d'être désaisonnalisées:
+
+* France: consommation et immo2
+* Etats-Unis: aucune
+* Royaume-Uni: revenu
+* Italie: consommation et revenu
+* Espagne: consommation et revenu
+
+Le code corrige automatiquement la saisonnalité si nécessaire.
+
+```{r desaisonnalisation, include=FALSE}
+
+date_temp <- as.Date(date_debut)
+
+# Consommation
+if (pays == "France" || pays == "Italie" || pays == "Espagne") {
+  temp <- ts(data["conso"],
+             start = c(as.numeric(format(date_temp, "%Y")), as.numeric(format(date_temp, "%m"))),
+             frequency = 4)
+  data["conso"] <- X13(temp)
+}
+
+# Revenu
+if (pays == "UK" || pays == "Italie" || pays == "Espagne") {
+  temp <- ts(data["revenu"],
+             start = c(as.numeric(format(date_temp, "%Y")), as.numeric(format(date_temp, "%m"))),
+             frequency = 4)
+  data["revenu"] <- X13(temp)
+}
+
+# Série immo 2 française
+if (pays == "France" && methode_immo == "2") {
+  temp <- ts(data["immo_2"],
+             start = c(as.numeric(format(date_temp, "%Y")), as.numeric(format(date_temp, "%m"))),
+             frequency = 4)
+  data["immo_2"] <- X13(temp)
+}
+```
+
+### Statistiques descriptives
+
+Statistiques descriptives des variables principales du jeux de données. La période est restreinte aux dates sélectionnées.
+
+```{r stat_des, echo=FALSE}
+
+# Tronquer le jeux de données
+df <- data[rownames(data) >= date_debut & rownames(data) <= date_fin,]
+
+# Statistiques descriptives
+tab_01 <- data.frame(
+  Statistiques = c("Consommation", "Patrimoine financier", "Patrimoine immobilier 1", "Patrimoine immobilier Slacalek"),
+  Min = c(min(df$conso), min(df$actif_fin), min(df$immo_1), min(df$immo_slac)),
+  Médiane = c(median(df$conso), median(df$actif_fin), median(df$immo_1), median(df$immo_slac)),
+  Moyenne = c(mean(df$conso), mean(df$actif_fin), mean(df$immo_1), mean(df$immo_slac)),
+  Max = c(max(df$conso), max(df$actif_fin), max(df$immo_1), max(df$immo_slac)),
+  Variance = c(var(df$conso), var(df$actif_fin), var(df$immo_1), var(df$immo_slac)),
+  SD = c(sd(df$conso), sd(df$actif_fin), sd(df$immo_1), sd(df$immo_slac))
+)
+
+kable(
+  tab_01,
+  col.names = c("Statistiques", "*Min*", "*Médiane*", "*Moyenne*", "*Max*", "*Variance*", "*Ecart-type*"),
+  digits = 2,
+  caption = "Statistiques descriptives - Variables de richesse et consommation"
+)
+
+```
+
+La note de bas de page 22 indique que l'on doit trouver une corrélation entre $\delta C_t$ et $\Delta log (C_t)$ supérieure à 0.998 pour tous les pays.
+
+```{r check_corr, include=TRUE}
+
+consommation <- df_consommation(data, date_debut, date_fin)
+cor_conso(consommation)
+```
+
+### Représentations graphiques
+
+```{r graphs, echo=FALSE}
+
+# Consommation
+plot_consommation(consommation, pays)
+
+# Patrimoine financier et immobilier
+richesse <- df_richesse(data, date_debut, date_fin, methode_immo)
+plot_richesse(richesse, pays)
+
+# Variables de contrôle
+var_control <- df_control(data, date_debut, date_fin)
+visualisation_controles(var_control, pays)
+```
+
+### Tests de stationnarités
+
+Fonction qui, pour chaque variable (colonne) d'un dataframe, affiche son ACF, PACF et les résultats des tests ADF et KPSS.
+
+```{r statio, echo=FALSE}
+
+stationarite(richesse)
+stationarite(consommation)
+stationarite(var_control)
+```
+
+## Modélisation
+
+### Calcul de la persistance de la consommation, chi
+
+### Calcul des PMC (immédiate et éventuelle)

@@ -1,4 +1,4 @@
-cor_conso <- function(conso, pays) {
+cor_conso <- function(conso) {
 
   var_log_conso <- as.data.frame(conso$var_log_conso)
 
@@ -7,5 +7,5 @@ cor_conso <- function(conso, pays) {
   df <- as.data.frame(na.omit(df))
 
   corr <- cor(df, conso[6:nrow(conso), "var_log_conso"], method = "pearson")
-  print(paste("La corrélation pour le", pays, "est de", corr))
+  print(paste("La corrélation est de", corr))
 }

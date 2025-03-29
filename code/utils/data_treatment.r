@@ -11,6 +11,12 @@ richesse_immo_slacalek <- function(df, country) {
     sf <- 9031766
   } else if (country == "France") {
     sf <- 3073655
+  } else if (country == "UK") {
+    sf <- 1
+  } else if (country == "Italie") {
+    sf <- 1
+  } else if (country == "Espagne") {
+    sf <- 1
   } else {
     stop("Erreur : Veuillez indiquer un pays valide")
   }
@@ -44,23 +50,23 @@ X13 <- function(df) {
 df_richesse <- function(donnees, debut, fin, serie_immo) {
 
   # Sélection de la série à utiliser pour le patrimoine
-  if (serie_immo == 1) {
+  if (serie_immo == "1") {
     nom_immo <- "immo_1"
-  } else if (serie_immo == 2) {
+  } else if (serie_immo == "2") {
     nom_immo <- "immo_2"
-  } else if (serie_immo == 3) {
+  } else if (serie_immo == "slac") {
     nom_immo <- "immo_slac"
   } else {
-    stop("Erreur : serie_immo doit être 1 ou 2")
+    stop("Erreur : serie_immo doit être 1, 2 ou slac.")
   }
 
   # Nouveau dataframe avec uniquement le patrimoine financier et immobilier
   df <- donnees[rownames(donnees) >= debut & rownames(donnees) <= fin,
                 c("actif_fin", nom_immo)]
-  colnames(df) <- c("financier", "immobilier")
+  colnames(df) <- c("pat_fin", "pat_immo")
 
   # Ajout de la richesse totale du ménage
-  df["totale"] <- df["financier"] + df["immobilier"]
+  df["pat_total"] <- df["pat_fin"] + df["pat_immo"]
 
   # Expression de la richesse par habitant
   pop <- donnees[rownames(donnees) >= debut & rownames(donnees) <= fin,
@@ -159,11 +165,12 @@ compute_weighted_sum_lag <- function(x, chi) {
   S <- numeric(n)  # Initialiser le vecteur résultant
 
   for (t in 2:n) {
-    if(t==1){
-    S[t] <- NA
-  }else{
-    S[t] <- sum(x[2:(t-1)] * chi^((t-2):1))}
+    if (t == 1) {
+      S[t] <- NA
+    } else {
+      S[t] <- sum(x[2:(t - 1)] * chi^((t - 2):1))
+    }
   }
-  
+
   return(S)
 }
