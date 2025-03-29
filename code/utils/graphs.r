@@ -13,12 +13,12 @@ plot_richesse <- function(df, pays) {
   y_min <- min(c(df$pat_immo, df$pat_fin))
   y_max <- max(c(df$pat_immo, df$pat_fin))
 
-  plot(dates, df$immobilier, type = "l",
+  plot(dates, df$pat_immo, type = "l",
        main = paste("Evolution de la richesse - ", pays),
        xlab = "Années",
        ylab = yleg,
        ylim = c(y_min, y_max))
-  lines(dates, df$financier, type = "l", lty = "dashed")
+  lines(dates, df$pat_fin, type = "l", lty = "dashed")
 
   legend("bottomright", legend = c("Patrimoine immobilier", "Patrimoine financier"),
          lty = c("solid", "dashed"))

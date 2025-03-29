@@ -56,7 +56,7 @@ Cette option peut être outrepassée dans le morceau de code _select_dates_. Dan
 ```{r select_params, include=TRUE}
 
 # Paramètres du modèle
-pays <- "Espagne" # France, US, UK, Italie, Espagne
+pays <- "Italie" # France, US, UK, Italie, Espagne
 methode_immo <- "1" # 1, 2, slac
 ```
 
@@ -264,7 +264,7 @@ Calcul de la persistance de la consommation. Le paramètre "freq" correspond à 
 chi <- chi(data, date_debut, date_fin, freq = 1)["chi"]
 print(chi)
 
-plot_chi(data, 20, date_debut, date_fin, 1)
+plot_chi(data, 10, date_debut, date_fin, 1)
 ```
 
 ### Calcul des PMC (immédiate et éventuelle)
