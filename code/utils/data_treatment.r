@@ -1,25 +1,13 @@
-richesse_immo_slacalek <- function(df, country) {
+richesse_immo_slacalek <- function(df) {
   # Fonction pour répliquer la richesse immobilière
   # Méthode: Slacalek
   # HW = sf * (DS * N) * HP avec DS: dwelling stocks per capita
 
   # Facteur d'échelle
   # sf = HW/FW * FW avec HW/FW: ratio fixe
-  # Valeurs de HW et FW prise des comptes nationaux annuels 2010
-  # Exprimé en millions
-  if (country == "US") {
-    sf <- 9031766
-  } else if (country == "France") {
-    sf <- 3073655
-  } else if (country == "UK") {
-    sf <- 1
-  } else if (country == "Italie") {
-    sf <- 1
-  } else if (country == "Espagne") {
-    sf <- 1
-  } else {
-    stop("Erreur : Veuillez indiquer un pays valide")
-  }
+  # FW de 2 sources différentes => 2eme inaccessible
+  # Remplacement par HW 01/01/2010 (RHP en base 100 = 2010)
+  sf <- df["2010-01-01", "immo_1"]
 
   # Séries de données
   dwelling_stock <- df[, "dwelling stocks"]
