@@ -19,6 +19,7 @@ library(dplyr)
 # Importation des fonctions à utiliser
 source(here("code/utils/import.R"))
 source(here("code/utils/data_treatment.R"))
+source(here("code/utils/data_visualisation.R"))
 source(here("code/utils/graphs.R"))
 source(here("code/utils/test_correlation.R"))
 source(here("code/utils/stationarity.R"))
@@ -86,7 +87,7 @@ if (pays != "France") {
 
 ```{r select_dates, include=FALSE}
 
-date_fin <- "2019-10-01"
+date_fin <- "2022-10-01"
 
 # Choix des paramètres: date_debut et date_fin
 if (pays == "France") {
@@ -139,8 +140,10 @@ data <- data[rownames(data) >= date_debut & rownames(data) <= date_fin, ]
 # Calcul du patrimoine immobilier avec la méthode de Slacalek
 data <- richesse_immo_slacalek(data)
 
-# Visualisation
+# Ajout d'une indicatrive pour les périodes post décembre 20219
+data <- year_dummy(data, "2020-01-01")
 
+# Visualisation
 tab_00 <- data.frame(head(data))
 
 kable(tab_00,
