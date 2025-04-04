@@ -57,7 +57,7 @@ Cette option peut être outrepassée dans le morceau de code _select_dates_. Dan
 ```{r select_params, include=TRUE}
 
 # Paramètres du modèle
-pays <- "US" # France, US, UK, Italie, Espagne
+pays <- "UK" # France, US, UK, Italie, Espagne
 methode_immo <- "1" # 1, 2, slac
 ```
 
@@ -87,7 +87,8 @@ if (pays != "France") {
 
 ```{r select_dates, include=FALSE}
 
-date_fin <- "2022-10-01"
+# date_fin <- "2019-10-01"
+date_fin <- "2023-01-01"
 
 # Choix des paramètres: date_debut et date_fin
 if (pays == "France") {
@@ -139,9 +140,6 @@ data <- data[rownames(data) >= date_debut & rownames(data) <= date_fin, ]
 
 # Calcul du patrimoine immobilier avec la méthode de Slacalek
 data <- richesse_immo_slacalek(data)
-
-# Ajout d'une indicatrive pour les périodes post décembre 20219
-data <- year_dummy(data, "2020-01-01")
 
 # Visualisation
 tab_00 <- data.frame(head(data))
@@ -242,7 +240,7 @@ plot_richesse(richesse, pays)
 
 # Variables de contrôle
 var_control <- df_control(data, date_debut, date_fin)
-# visualisation_controles(var_control, pays)
+visualisation_controles(var_control, pays)
 ```
 
 ### Tests de stationnarités
@@ -264,7 +262,7 @@ Calcul de la persistance de la consommation. Le paramètre "freq" correspond à 
 
 ```{r chi, include=TRUE}
 
-chi_fun <- chi(data, date_debut, date_fin, freq = 1)
+chi_fun <- chi(data, freq = 1)
 
 print(chi_fun["chi"]) # Chi
 print(chi_fun["clr"]) # Moreira CLR (95%)
@@ -275,6 +273,12 @@ summary(chi_fun[["model"]])
 # Permet d'obtenir: R2 de la première reg + pval du test de Sargan (validité des instruments)
 
 # plot_chi(data, 10, date_debut, date_fin, 1)
+
+# Calcul du chi avec une dummy pour le Covid
+chi_fun_d <- chi_with_year_dummy(data, freq = 1)
+print(chi_fun_d["chi"])
+summary(chi_fun_d[["model"]])
+
 ```
 
 ### Calcul des PMC (immédiate et éventuelle)

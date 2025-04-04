@@ -1,15 +1,10 @@
-
-#data_new n'est pas utilisé que pour les US
-#c'est une ancienne notation
-
-chi <- function(df, date_debut, date_fin, freq) {
+chi <- function(df, freq) {
 
   # Librairies
   library(dplyr)
   library(ivmodel)
 
   #df des nouvelles variables
-  df <- df[rownames(df) >= date_debut & rownames(df) <= date_fin, ]
   data_new <- df[seq(1, nrow(df), by = freq), ]
 
   #ajout spread et croissance conso et revenu, (correction par cpi nécessaire ? faite)
@@ -23,10 +18,8 @@ chi <- function(df, date_debut, date_fin, freq) {
   data_new <- data_new %>%
     mutate(diff_taux_ct = (taux_ct - lag(taux_ct)))
 
-
   #Obtenir \Delta log(C_t), représente la variation de C_t
   data_new$delta_log_c <- c(NA, diff(log(data_new$conso)))
-
 
   #Obtenir les lag t-1 et t-2, on les nomme lag1 et lag2 suivi du nom de la variable originale
   data_new <- data_new %>%
@@ -83,6 +76,86 @@ chi <- function(df, date_debut, date_fin, freq) {
 
   return(result)
 }
+
+chi_with_year_dummy <- function(df, freq) {
+
+  #
+  library(dplyr)
+  library(ivmodel)
+  library(here)
+  source(here("code/utils/data_treatment.R"))
+
+  # Data frame de travail
+  data_new <- df[seq(1, nrow(df), by = freq), ]
+  data_new <- year_dummy(data_new, "2020-01-01")
+
+    #ajout spread et croissance conso et revenu, (correction par cpi nécessaire ? faite)
+  data_new <- data_new %>%
+    mutate(conso = conso/(population),
+    revenu = revenu/(population),
+      income_growth = (revenu - lag(revenu)) / lag(revenu) * 100,
+    conso_growth = (conso - lag(conso)) / lag(conso) * 100)
+
+  #Donne le "differenced" taux_ct
+  data_new <- data_new %>%
+    mutate(diff_taux_ct = (taux_ct - lag(taux_ct)))
+
+  #Obtenir \Delta log(C_t), représente la variation de C_t
+  data_new$delta_log_c <- c(NA, diff(log(data_new$conso)))
+
+  #Obtenir les lag t-1 et t-2, on les nomme lag1 et lag2 suivi du nom de la variable originale
+  data_new <- data_new %>%
+    mutate(across(c(chomage, diff_taux_ct, conso_growth, spread,confiance,income_growth, year_dummy), ~ lag(.x, n = 2), .names = "lag2_{.col}"))
+
+  data_new <- data_new %>%
+    mutate(across(c(chomage, diff_taux_ct, conso_growth,spread , confiance,income_growth,delta_log_c, year_dummy), ~ lag(.x, n = 1), .names = "lag1_{.col}"))
+
+  #première régression sur les variables instrumentales, pour faire la reg IV de Delta log ct sur son lag t-1
+  model_IV <- lm(lag1_delta_log_c ~ year_dummy + lag2_chomage + lag2_diff_taux_ct + lag2_spread + lag2_conso_growth + lag2_confiance + lag2_income_growth, data = data_new, na.action = na.omit)
+
+  #construction de l'argument pour faire la prédiction du régressseur dans la 2eme partie de l'IV reg
+  new_data <- data_new %>%
+    select(year_dummy, lag2_chomage ,lag2_diff_taux_ct,lag2_spread,lag2_conso_growth, lag2_confiance, lag2_income_growth) # Sélectionner les colonnes
+
+  data_new$predicted_lag1_delta_log_c <- predict(model_IV, newdata = new_data)
+
+  #régression finale
+  model <- lm(delta_log_c ~ predicted_lag1_delta_log_c, data = data_new, na.action = na.omit)
+
+  # Utilisation d'un package, pour tous les outputs annexes
+  y <- data_new$delta_log_c
+  x <- data_new$lag1_delta_log_c
+  z <- cbind(data_new$lag2_chomage,
+             data_new$lag2_diff_taux_ct,
+             data_new$lag2_spread,
+             data_new$lag2_conso_growth,
+             data_new$lag2_confiance,
+             data_new$lag2_income_growth,
+             data_new$year_dummy)
+
+  # Régression instrumentale
+  iv_model <- ivmodel(Y = y, D = x, Z = z)
+
+  # Coefficients
+  chi <- iv_model$kClass$point.est[2]
+  std <- iv_model$kClass$std.err[2]
+  pval <- iv_model$kClass$p.value[2]
+
+  # Moreira CLR (2003)
+  clr <- iv_model$CLR$ci
+  rob_pval <- iv_model$CLR$p.value
+
+  #Pour le calcul ultérieur de la PMC (résidu de l'ivreg)
+  residuals <- c(NA,NA,NA,as.vector(residuals(model)))
+
+  result <- list(model = iv_model,
+                 chi = chi, std_chi = std, p_value = pval, residuals = residuals,
+                 clr = clr, robpval = rob_pval)
+
+  return(result)
+
+}
+
 
 #Fonction pour le tracé de chi en fonction du temps
 #memes entrées que chi avec maille longueur de la plage temporelle de calcul

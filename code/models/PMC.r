@@ -26,7 +26,7 @@ PMC <- function(df, freq, date_debut, date_fin, methode_immo, chi_restricted = F
     mutate(diff_taux_ct = (taux_ct - lag(taux_ct)))
 
   #obtenir le terme d'erreur pour régression
-  chi_fun <- chi(df, date_debut, date_fin, freq)
+  chi_fun <- chi(df, freq)
   #epsilon <- chi_fun$residuals
 
 
