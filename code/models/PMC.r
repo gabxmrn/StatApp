@@ -1,28 +1,28 @@
 
-#data_us_new_var n'est pas que pour les US, c'est une ancienne notation
+#data_new n'est pas que pour les US, c'est une ancienne notation
 #probablement encore un problème dans les données de richesse us
-#et aussi un peut etre un problème de date dans la fusion de data_us_new_var et richesse_us
+#et aussi un peut etre un problème de date dans la fusion de data_new et richesse_us
 
 PMC <- function(df, freq, date_debut, date_fin, methode_immo, chi_restricted = FALSE) {
 
+  # Importations
   library(dplyr)
   library(here)
-
   source(here("code/models/chi.R"))
   source(here("code/utils/data_treatment.R"))
 
   #df des nouvelles variables
-  data_us_new_var <- df[seq(1, nrow(df), by = freq), ]
+  data_new <- df[seq(1, nrow(df), by = freq), ]
 
   #ajout spread et croissance conso et revenu
-  data_us_new_var$spread <- data_us_new_var$taux_lt - data_us_new_var$taux_ct
-  data_us_new_var <- data_us_new_var %>%
+  data_new$spread <- data_new$taux_lt - data_new$taux_ct
+  data_new <- data_new %>%
     mutate(income_growth = (revenu - lag(revenu)) / lag(revenu) * 100)
-  data_us_new_var <- data_us_new_var %>%
+  data_new <- data_new %>%
     mutate(conso_growth = (conso - lag(conso)) / lag(conso) * 100)
 
   #Donne le "differenced" taux_ct : change pas franchement le résultat et conflit de notation à revoir
-  data_us_new_var <- data_us_new_var %>%
+  data_new <- data_new %>%
     mutate(diff_taux_ct = (taux_ct - lag(taux_ct)))
 
   #obtenir le terme d'erreur pour régression
@@ -32,13 +32,13 @@ PMC <- function(df, freq, date_debut, date_fin, methode_immo, chi_restricted = F
 
   #obtenir delta W_t
   richesse_us <- df_richesse(df, date_debut, date_fin, methode_immo)
-  data_us_new_var$wealth <- richesse_us[seq(1, nrow(df), by = freq), "pat_total"]
-  #data_us_new_var$epsilon <- epsilon
-  # data_us_new_var <- data_us_new_var %>%
+  data_new$wealth <- richesse_us[seq(1, nrow(df), by = freq), "pat_total"]
+  #data_new$epsilon <- epsilon
+  # data_new <- data_new %>%
   #   mutate(delta_W = (wealth - lag(wealth))/ lag(conso))
 
   # #première régression dite pas efficace par Slacalek
-  # model <- lm(epsilon ~ delta_W + diff_taux_ct + spread + income_growth, data = data_us_new_var, na.action = na.omit)
+  # model <- lm(epsilon ~ delta_W + diff_taux_ct + spread + income_growth, data = data_new, na.action = na.omit)
 
   # alpha_w <- coef(model)["delta_W"]
   # #calcul avec chi = 0.6
@@ -46,7 +46,7 @@ PMC <- function(df, freq, date_debut, date_fin, methode_immo, chi_restricted = F
 
 #obtention des nouvelles variables pour la 2eme méthode
 # Calcul de ΔW = Wt - Wt-1
-  data_us_new_var <- data_us_new_var %>%
+  data_new <- data_new %>%
   mutate(Delta_W = wealth - lag(wealth, 1),
   Delta_log_conso = log(conso) - lag(log(conso),1))
 
@@ -59,7 +59,7 @@ PMC <- function(df, freq, date_debut, date_fin, methode_immo, chi_restricted = F
   }
 
   #calcul de delta_barre_W (voir article p.20)
-  data_us_new_var <- data_us_new_var %>%
+  data_new <- data_new %>%
     mutate(
       Delta_W_t1 = lag(Delta_W, 1),  # Décalage de ΔW par 1
       Delta_W_t2 = lag(Delta_W, 2),  # Décalage de ΔW par 2
@@ -68,12 +68,12 @@ PMC <- function(df, freq, date_debut, date_fin, methode_immo, chi_restricted = F
     )
 
   #Calcul de delta_C (p.20) et lag de toutes les variables
-  data_us_new_var <- data_us_new_var %>%
+  data_new <- data_new %>%
     mutate(delta_C = (conso - lag(conso))/lag(conso,5),
     across(c(chomage, diff_taux_ct,spread ,income_growth), ~compute_weighted_sum_lag(.x,chi), .names = "acc_{.col}"))
 
   #régression de la p.20
-  model_2 <- lm(delta_C ~ lag(delta_barre_W) + acc_income_growth + acc_chomage + acc_diff_taux_ct + acc_spread, data = data_us_new_var, na.action = na.omit)
+  model_2 <- lm(delta_C ~ lag(delta_barre_W) + acc_income_growth + acc_chomage + acc_diff_taux_ct + acc_spread, data = data_new, na.action = na.omit)
   alpha_w <- as.numeric(coef(model_2)["lag(delta_barre_W)"])[[1]]
   std <- summary(model_2)$coefficients["lag(delta_barre_W)", 2]
 

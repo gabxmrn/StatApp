@@ -1,49 +1,57 @@
 chi <- function(df, freq) {
+  # Fonction qui permet de calculer la persistance de la consommation
+  # Méthode: Slacalek, régression avec variable instrumentale
+  # Variable expliquée (Y): variation du log de la conso (t)
+  # Variable explicative (X): variation du log de la conso (t-1)
+  # Instruments (Z): croissance conso, croissance revenu, spread, confiance consommateurs, taux CT et chômage
 
-  # Librairies
+
+  # Importations
   library(dplyr)
   library(ivmodel)
 
-  #df des nouvelles variables
+  # Dataframe (annuel ou trimestriel)
   data_new <- df[seq(1, nrow(df), by = freq), ]
 
-  #ajout spread et croissance conso et revenu, (correction par cpi nécessaire ? faite)
+  # Z: calcul croissance de la conso et du revenu par habitant (base 2015)
   data_new <- data_new %>%
-    mutate(conso = conso/(population),
-    revenu = revenu/(population),
-      income_growth = (revenu - lag(revenu)) / lag(revenu) * 100,
-    conso_growth = (conso - lag(conso)) / lag(conso) * 100)
+    mutate(conso = conso / (population * cpi),
+           revenu = revenu / (population * cpi),
+           income_growth = (revenu - lag(revenu)) / lag(revenu) * 100,
+           conso_growth = (conso - lag(conso)) / lag(conso) * 100)
 
-  #Donne le "differenced" taux_ct
+  # Z: calcul différence du taux CT
   data_new <- data_new %>%
     mutate(diff_taux_ct = (taux_ct - lag(taux_ct)))
 
-  #Obtenir \Delta log(C_t), représente la variation de C_t
+  # Y: Calcul de Delta log(C_t), représente la variation de C_t
   data_new$delta_log_c <- c(NA, diff(log(data_new$conso)))
 
-  #Obtenir les lag t-1 et t-2, on les nomme lag1 et lag2 suivi du nom de la variable originale
+  # Obtenir les lag t-1 et t-2
+  # On les nomme lag1 et lag2 suivi du nom de la variable originale
   data_new <- data_new %>%
-    mutate(across(c(chomage, diff_taux_ct, conso_growth, spread,confiance,income_growth), ~ lag(.x, n = 2), .names = "lag2_{.col}"))
+    mutate(across(c(chomage, diff_taux_ct, conso_growth, spread,confiance,income_growth),
+                  ~ lag(.x, n = 2),
+                  .names = "lag2_{.col}"))
 
   data_new <- data_new %>%
-    mutate(across(c(chomage, diff_taux_ct, conso_growth,spread , confiance,income_growth,delta_log_c), ~ lag(.x, n = 1), .names = "lag1_{.col}"))
+    mutate(across(c(chomage, diff_taux_ct, conso_growth,spread , confiance,income_growth,delta_log_c),
+                  ~ lag(.x, n = 1),
+                  .names = "lag1_{.col}"))
 
-  #première régression sur les variables instrumentales, pour faire la reg IV de Delta log ct sur son lag t-1
-  model_IV <- lm(lag1_delta_log_c ~ lag2_chomage + lag2_diff_taux_ct + lag2_spread + lag2_conso_growth + lag2_confiance + lag2_income_growth, data = data_new, na.action = na.omit)
+  # Rég 1: Z sur X
+  model_IV <- lm(lag1_delta_log_c ~ lag2_chomage + lag2_diff_taux_ct + lag2_spread + lag2_conso_growth + lag2_confiance + lag2_income_growth,
+                 data = data_new, na.action = na.omit)
 
-  #reconstruction de la prédiction sur les IV
-  #new_data <- data_new %>%
-  #  select(lag1_chomage ,lag1_diff_taux_ct,lag1_spread,lag1_conso_growth, lag1_confiance, lag1_income_growth) %>%  # Sélectionner les colonnes
-  #  rename(lag2_chomage = lag1_chomage, lag2_diff_taux_ct = lag1_diff_taux_ct, lag2_spread = lag1_spread, lag2_conso_growth = lag1_conso_growth, lag2_confiance = lag1_confiance, lag2_income_growth = lag1_income_growth)
-
-  #construction de l'argument pour faire la prédiction du régressseur dans la 2eme partie de l'IV reg
+  # Construction de l'argument pour faire la prédiction du régressseur dans la 2eme partie de l'IV reg
   new_data <- data_new %>%
-    select(lag2_chomage ,lag2_diff_taux_ct,lag2_spread,lag2_conso_growth, lag2_confiance, lag2_income_growth) # Sélectionner les colonnes
+    select(lag2_chomage,lag2_diff_taux_ct,lag2_spread,lag2_conso_growth, lag2_confiance, lag2_income_growth)
 
   data_new$predicted_lag1_delta_log_c <- predict(model_IV, newdata = new_data)
 
-  #régression finale
-  model <- lm(delta_log_c ~ predicted_lag1_delta_log_c, data = data_new, na.action = na.omit)
+  # Rég 2: X sur Y
+  model <- lm(delta_log_c ~ predicted_lag1_delta_log_c + year_dummy, data = data_new, na.action = na.omit)
+  print(summary(model))
 
   # Utilisation d'un package, pour tous les outputs annexes
   y <- data_new$delta_log_c
@@ -53,7 +61,7 @@ chi <- function(df, freq) {
              data_new$lag2_spread,
              data_new$lag2_conso_growth,
              data_new$lag2_confiance,
-             data_new$lag2_income_growth)
+             data_new$lag2_income_growthy)
 
   # Régression instrumentale
   iv_model <- ivmodel(Y = y, D = x, Z = z)
@@ -71,7 +79,7 @@ chi <- function(df, freq) {
   residuals <- c(NA,NA,NA,as.vector(residuals(model)))
 
   result <- list(model = iv_model,
-                 chi = chi, std_chi = std, p_value = pval, residuals = residuals,
+                 chi = chi, std_chi = std, pvalue = pval, residuals = residuals,
                  clr = clr, robpval = rob_pval)
 
   return(result)
@@ -79,7 +87,7 @@ chi <- function(df, freq) {
 
 chi_with_year_dummy <- function(df, freq) {
 
-  #
+  # Importations
   library(dplyr)
   library(ivmodel)
   library(here)
@@ -91,8 +99,8 @@ chi_with_year_dummy <- function(df, freq) {
 
     #ajout spread et croissance conso et revenu, (correction par cpi nécessaire ? faite)
   data_new <- data_new %>%
-    mutate(conso = conso/(population),
-    revenu = revenu/(population),
+    mutate(conso = conso/(population*cpi),
+    revenu = revenu/(population*cpi),
       income_growth = (revenu - lag(revenu)) / lag(revenu) * 100,
     conso_growth = (conso - lag(conso)) / lag(conso) * 100)
 
