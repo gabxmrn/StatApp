@@ -50,8 +50,7 @@ chi <- function(df, freq) {
   data_new$predicted_lag1_delta_log_c <- predict(model_IV, newdata = new_data)
 
   # Rég 2: X sur Y
-  model <- lm(delta_log_c ~ predicted_lag1_delta_log_c + year_dummy, data = data_new, na.action = na.omit)
-  print(summary(model))
+  model <- lm(delta_log_c ~ predicted_lag1_delta_log_c, data = data_new, na.action = na.omit)
 
   # Utilisation d'un package, pour tous les outputs annexes
   y <- data_new$delta_log_c
