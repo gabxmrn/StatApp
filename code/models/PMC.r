@@ -14,25 +14,24 @@ PMC <- function(df, freq, date_debut, date_fin, methode_immo, chi_restricted = F
   #df des nouvelles variables
   data_new <- df[seq(1, nrow(df), by = freq), ]
 
-  #ajout spread et croissance conso et revenu
+  # Calcul du spread, de la croissance du revenu, et de la variation du taux CT
   data_new$spread <- data_new$taux_lt - data_new$taux_ct
   data_new <- data_new %>%
-    mutate(income_growth = (revenu - lag(revenu)) / lag(revenu) * 100)
-  data_new <- data_new %>%
-    mutate(conso_growth = (conso - lag(conso)) / lag(conso) * 100)
-
-  #Donne le "differenced" taux_ct : change pas franchement le résultat et conflit de notation à revoir
+    mutate(revenu = revenu / (population * cpi),
+           income_growth = (revenu - lag(revenu)) / lag(revenu) * 100)
   data_new <- data_new %>%
     mutate(diff_taux_ct = (taux_ct - lag(taux_ct)))
 
-  #obtenir le terme d'erreur pour régression
+  # Obtenir les résultats de la fonction calculant le chi
+  # Utilisés: valeur du chi et résidus
   chi_fun <- chi(df, freq)
-  #epsilon <- chi_fun$residuals
 
+  # Obtenir la richesse
+  richesse <- df_richesse(df, date_debut, date_fin, methode_immo)
+  data_new$wealth <- richesse[seq(1, nrow(df), by = freq), "pat_total"]
+  data_new$FW <- richesse[seq(1, nrow(df), by = freq), "pat_fin"]
+  data_new$HW <- richesse[seq(1, nrow(df), by = freq), "pat_immo"]
 
-  #obtenir delta W_t
-  richesse_us <- df_richesse(df, date_debut, date_fin, methode_immo)
-  data_new$wealth <- richesse_us[seq(1, nrow(df), by = freq), "pat_total"]
   #data_new$epsilon <- epsilon
   # data_new <- data_new %>%
   #   mutate(delta_W = (wealth - lag(wealth))/ lag(conso))
@@ -44,21 +43,22 @@ PMC <- function(df, freq, date_debut, date_fin, methode_immo, chi_restricted = F
   # #calcul avec chi = 0.6
   # PMC_ev <- alpha_w / 0.24
 
-#obtention des nouvelles variables pour la 2eme méthode
-# Calcul de ΔW = Wt - Wt-1
+  # Variation de la richesse et du log de la conso
+  # Calcul de ΔW = Wt - Wt-1
   data_new <- data_new %>%
-  mutate(Delta_W = wealth - lag(wealth, 1),
-  Delta_log_conso = log(conso) - lag(log(conso),1))
+    mutate(Delta_W = wealth - lag(wealth, 1),
+           Delta_FW = FW - lag(FW, 1),
+           Delta_HW = HW - lag(HW, 1),
+           Delta_log_conso = log(conso) - lag(log(conso), 1))
 
-
-  # Définir chi
+  # Choix du chi à utiliser
   if (chi_restricted == TRUE) {
     chi <- 0.6
   } else {
     chi <- chi_fun$chi
   }
 
-  #calcul de delta_barre_W (voir article p.20)
+  # Calcul de delta_barre_W (voir article p.20)
   data_new <- data_new %>%
     mutate(
       Delta_W_t1 = lag(Delta_W, 1),  # Décalage de ΔW par 1
@@ -67,26 +67,56 @@ PMC <- function(df, freq, date_debut, date_fin, methode_immo, chi_restricted = F
       delta_barre_W = chi * (Delta_W + chi * Delta_W_t1 + chi^2 * Delta_W_t2 + chi^3 * Delta_W_t3)/lag(conso,4)
     )
 
+  # Calcul de delta_barre_FW (voir article p.20)
+  data_new <- data_new %>%
+    mutate(
+      Delta_FW_t1 = lag(Delta_FW, 1),  # Décalage de ΔW par 1
+      Delta_FW_t2 = lag(Delta_FW, 2),  # Décalage de ΔW par 2
+      Delta_FW_t3 = lag(Delta_FW, 3),  # Décalage de ΔW par 3
+      delta_barre_FW = chi * (Delta_FW + chi * Delta_FW_t1 + chi^2 * Delta_FW_t2 + chi^3 * Delta_FW_t3)/lag(conso,4)
+    )
+
+  # Calcul de delta_barre_HW (voir article p.20)
+  data_new <- data_new %>%
+    mutate(
+      Delta_HW_t1 = lag(Delta_HW, 1),  # Décalage de ΔW par 1
+      Delta_HW_t2 = lag(Delta_HW, 2),  # Décalage de ΔW par 2
+      Delta_HW_t3 = lag(Delta_HW, 3),  # Décalage de ΔW par 3
+      delta_barre_HW = chi * (Delta_HW + chi * Delta_HW_t1 + chi^2 * Delta_HW_t2 + chi^3 * Delta_HW_t3)/lag(conso,4)
+    )
+
   #Calcul de delta_C (p.20) et lag de toutes les variables
   data_new <- data_new %>%
     mutate(delta_C = (conso - lag(conso))/lag(conso,5),
     across(c(chomage, diff_taux_ct,spread ,income_growth), ~compute_weighted_sum_lag(.x,chi), .names = "acc_{.col}"))
 
-  #régression de la p.20
+  # Régression totale
   model_2 <- lm(delta_C ~ lag(delta_barre_W) + acc_income_growth + acc_chomage + acc_diff_taux_ct + acc_spread, data = data_new, na.action = na.omit)
   alpha_w <- as.numeric(coef(model_2)["lag(delta_barre_W)"])[[1]]
   std <- summary(model_2)$coefficients["lag(delta_barre_W)", 2]
 
+  # Régression avec le patrimoine immobilier et financier
+  model_3 <- lm(delta_C ~ lag(delta_barre_FW) + lag(delta_barre_HW) + acc_income_growth + acc_chomage + acc_diff_taux_ct + acc_spread, data = data_new, na.action = na.omit)
+  alpha_fw <- as.numeric(coef(model_3)["lag(delta_barre_FW)"])[[1]]
+  std_fw <- summary(model_3)$coefficients["lag(delta_barre_FW)", 2]
+  alpha_hw <- as.numeric(coef(model_3)["lag(delta_barre_HW)"])[[1]]
+  std_hw <- summary(model_3)$coefficients["lag(delta_barre_HW)", 2]
 
   # PMC immédiate
   PMC_imm <- alpha_w / chi
+  PMC_imm_fw <- alpha_fw / chi
+  PMC_imm_hw <- alpha_hw / chi
 
   # PMV éventuelle
   PMC_ev <- alpha_w / (chi * (1 - chi))
-  result <- list(PMC_imm <- PMC_imm, PMC_ev <- PMC_ev, std <- std)
+  PMC_ev_fw <- alpha_fw / (chi * (1 - chi))
+  PMC_ev_hw <- alpha_hw / (chi * (1 - chi))
+
+  # Résultats
+  result <- list(PMC_imm = PMC_imm, PMC_imm_fw = PMC_imm_fw, PMC_ev_hw = PMC_imm_hw,
+                 PMC_ev = PMC_ev, PMC_ev_fw = PMC_ev_fw, PMC_ev_hw = PMC_ev_hw)
  
   return(result)
-
 }
 
 #Fonction pour le tracé de la PMC en fonction du temps

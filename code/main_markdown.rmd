@@ -287,13 +287,10 @@ summary(chi_fun_d[["model"]])
 
 # Chi = vraie valeur
 PMC_unres <- PMC(data, 1, date_debut, date_fin, methode_immo, FALSE)
-cat("\nPMC immédiate:", PMC_unres[[1]], "\n")
-cat("PMC éventuelle:", PMC_unres[[2]], "\n")
+print(PMC_unres)
 
 # Chi = 0.6
 PMC_res <- PMC(data, 1, date_debut, date_fin, methode_immo, TRUE)
-print("Résultats contraints avec chi=0.6")
-cat("\nPMC immédiate:", PMC_res[[1]], "\n")
-cat("PMC éventuelle:", PMC_res[[2]], "\n")
+print(PMC_res)
 
 ```
