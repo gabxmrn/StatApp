@@ -288,9 +288,12 @@ summary(chi_fun_d[["model"]])
 # Chi = vraie valeur
 PMC_unres <- PMC(data, 1, date_debut, date_fin, methode_immo, FALSE)
 print(PMC_unres)
+print(summary(PMC_unres[["model"]]))
+print(summary(PMC_unres[["model_HW_FW"]]))
 
 # Chi = 0.6
 PMC_res <- PMC(data, 1, date_debut, date_fin, methode_immo, TRUE)
 print(PMC_res)
-
+print(summary(PMC_res[["model"]]))
+print(summary(PMC_res[["model_HW_FW"]]))
 ```

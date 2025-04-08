@@ -114,7 +114,8 @@ PMC <- function(df, freq, date_debut, date_fin, methode_immo, chi_restricted = F
 
   # Résultats
   result <- list(PMC_imm = PMC_imm, PMC_imm_fw = PMC_imm_fw, PMC_ev_hw = PMC_imm_hw,
-                 PMC_ev = PMC_ev, PMC_ev_fw = PMC_ev_fw, PMC_ev_hw = PMC_ev_hw)
+                 PMC_ev = PMC_ev, PMC_ev_fw = PMC_ev_fw, PMC_ev_hw = PMC_ev_hw,
+                 model = model_2, model_HW_FW = model_3)
  
   return(result)
 }
