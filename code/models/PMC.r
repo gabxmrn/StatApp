@@ -10,6 +10,7 @@ PMC <- function(df, freq, date_debut, date_fin, methode_immo, chi_restricted = F
   library(here)
   source(here("code/models/chi.R"))
   source(here("code/utils/data_treatment.R"))
+  source(here("code/utils/data_visualisation.R"))
 
   #df des nouvelles variables
   data_new <- df[seq(1, nrow(df), by = freq), ]
