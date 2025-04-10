@@ -1,5 +1,6 @@
 source("code/utils/import.R")
 source("code/utils/data_treatment.R")
+source("code/utils/data_visualisation.R")
 source("code/utils/graphs.R")
 source("code/utils/test_correlation.R")
 source("code/utils/stationarity.R")
@@ -13,8 +14,8 @@ data_fr <- excel_import("code/data.xlsx", "France")
 data_us <- excel_import("code/data.xlsx", "US")
 
 # Calcul du patrimoine immobilier selon Slacalek
-data_fr <- richesse_immo_slacalek(data_fr, "France")
-data_us <- richesse_immo_slacalek(data_us, "US")
+#data_fr <- richesse_immo_slacalek(data_fr, "France")
+#data_us <- richesse_immo_slacalek(data_us, "US")
 
 #données des US de 1970 à 2004 -> intégré dans la base classique
 # data_us_old <- excel_import("code/data_us_70_04.xlsx", "Quarterly")
@@ -84,11 +85,11 @@ plot_richesse(richesse_us, "US")
 #plot_chi(data_us_old,12,date_debut, date_fin,1)
 
 # Pour les valeurs récentes
-date_debut <- "1970-12-01"
+date_debut <- "1990-12-01"
 #troncature en 2019 pour éviter les données COVID
-date_fin <- "2019-03-01"
-plot_chi(data_us,20,date_debut,date_fin,1)
-chi2 <- chi(data_us,date_debut,date_fin, 1)["chi"]
+date_fin <- "2019-12-01"
+#plot_chi(data_us,20,date_debut,date_fin,1)
+chi2 <- chi(data_fr,date_debut,date_fin, 1)["chi"]
 print(chi2["chi"])
 
 
@@ -101,8 +102,11 @@ print(chi2["chi"])
 # date_debut <- "2009-12-01"
 # date_fin <- "2024-06-01"
 
-PMC <- PMC(data_us, 1, date_debut, date_fin, FALSE)
+PMC <- PMC(data_fr, 1, date_debut, date_fin, "1",TRUE)
 print(PMC)
 
 
-#plot_PMC(data_us,20,date_debut,date_fin,1,TRUE)
+plot_PMC(data_us,20,date_debut,date_fin,1,FALSE)
+
+#synthese <- synthese(1,date_debut,date_fin)
+#print(synthese)

@@ -66,3 +66,29 @@ compute_weighted_sum_lag <- function(x, chi) {
 
   return(S)
 }
+
+synthese <- function(freq,date_debut,date_fin){
+
+source("code/utils/data_treatment.R")
+source("code/utils/data_visualisation.R")
+source("code/models/chi.R")
+source("code/models/PMC.R")
+
+fichier <- "code/data.xlsx"
+feuilles <- excel_sheets(fichier)
+
+resultats <- data.frame(Pays = character(), Chi = numeric(), PMC_ev = numeric(), PMC_ev_res = numeric())
+
+for (nom_pays in feuilles) {
+
+  if(nom_pays != "France_old" & nom_pays != "US_old"){
+  donnees <- excel_import(fichier, nom_pays)
+  print(nom_pays)
+
+  chi <- chi(donnees,date_debut,date_fin, 1)["chi"]
+  PMC_res <- PMC(donnees, 1, date_debut, date_fin, 1,TRUE)
+  PMC <- PMC(donnees, 1, date_debut, date_fin, 1,FALSE)
+  resultats <- rbind(resultats, data.frame(Pays = nom_pays, Chi = chi, PMC_ev_res = unlist(PMC_res['PMC_ev']), PMC_ev = unlist(PMC['PMC_ev'])))
+  }}
+ return(resultats)
+ }

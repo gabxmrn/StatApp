@@ -1,4 +1,4 @@
-chi <- function(df, freq) {
+chi <- function(df, debut, fin, freq) {
   # Fonction qui permet de calculer la persistance de la consommation
   # Méthode: Slacalek, régression avec variable instrumentale
   # Variable expliquée (Y): variation du log de la conso (t)
@@ -11,7 +11,7 @@ chi <- function(df, freq) {
   library(ivmodel)
 
   # Dataframe (annuel ou trimestriel)
-  data_new <- df[seq(1, nrow(df), by = freq), ]
+  data_new <- df[rownames(df) >= debut & rownames(df) <= fin, ][seq(1, nrow(df), by = freq), ]
 
   # Z: calcul croissance de la conso et du revenu par habitant (base 2015)
   data_new <- data_new %>%

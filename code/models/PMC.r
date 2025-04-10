@@ -13,7 +13,7 @@ PMC <- function(df, freq, date_debut, date_fin, methode_immo, chi_restricted = F
   source(here("code/utils/data_visualisation.R"))
 
   #df des nouvelles variables
-  data_new <- df[seq(1, nrow(df), by = freq), ]
+  data_new <- df[rownames(df) >= date_debut & rownames(df) <= date_fin, ][seq(1, nrow(df), by = freq), ]
 
   # Calcul du spread, de la croissance du revenu, et de la variation du taux CT
   data_new$spread <- data_new$taux_lt - data_new$taux_ct
@@ -25,7 +25,7 @@ PMC <- function(df, freq, date_debut, date_fin, methode_immo, chi_restricted = F
 
   # Obtenir les résultats de la fonction calculant le chi
   # Utilisés: valeur du chi et résidus
-  chi_fun <- chi(df, freq)
+  chi_fun <- chi(df, date_debut, date_fin,freq)
 
   # Obtenir la richesse
   richesse <- df_richesse(df, date_debut, date_fin, methode_immo)
@@ -114,9 +114,10 @@ PMC <- function(df, freq, date_debut, date_fin, methode_immo, chi_restricted = F
   PMC_ev_hw <- alpha_hw / (chi * (1 - chi))
 
   # Résultats
-  result <- list(PMC_imm = PMC_imm, PMC_imm_fw = PMC_imm_fw, PMC_ev_hw = PMC_imm_hw,
+  result <- list(PMC_imm = PMC_imm, PMC_imm_fw = PMC_imm_fw, PMC_imm_hw = PMC_imm_hw,
                  PMC_ev = PMC_ev, PMC_ev_fw = PMC_ev_fw, PMC_ev_hw = PMC_ev_hw,
-                 model = model_2, model_HW_FW = model_3)
+                 model = model_2, model_HW_FW = model_3, std = std, std_fw = std_fw, std_hw = std_hw)
+
  
   return(result)
 }
@@ -135,6 +136,9 @@ step <- "1 year" #pas du graphique
 window <- maille #longueur de la plage temporelle
 resultats <- data.frame(Annee = numeric(), Valeur = numeric(), std = numeric())
 
+type <- ""
+#type <- "_hw"
+#type <- "_fw"
 #Construction des plages d'années pour les calculs
 for (annee in seq.Date(as.Date(date_debut), as.Date(date_fin) - years(window), by = step)) {
   debut <- as.Date(annee)
@@ -142,8 +146,10 @@ for (annee in seq.Date(as.Date(date_debut), as.Date(date_fin) - years(window), b
 
 #la PMC considérée est la PMC_ev dans ce code(modifiable facilement)
 #Construction du tableau de valeurs pour le plot (PMC_ev, écart-type)
-  valeur <- PMC(df, freq, debut, fin, chi_restricted)[[2]] #transformer 2 en 1 pour passer à la PMC_im
-  std <- PMC(df, freq, debut, fin, chi_restricted)[[3]] #la std prise est celle de alpha_w, valable uniquement pour chi_restricted = TRUE
+  valeur <- PMC(df, freq, debut, fin, 1,chi_restricted)[paste0("PMC_ev",type)]
+  std <- PMC(df, freq, debut, fin, 1,chi_restricted)[paste0("std",type)] #la std prise est celle de alpha_w, valable uniquement pour chi_restricted = TRUE
+  valeur <- unlist(valeur)
+  std <- unlist(std)
   #p_value <- chi(df,debut, fin,freq)["p_value"]
   
   # Stocker les résultats
