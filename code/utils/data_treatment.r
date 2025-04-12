@@ -79,16 +79,33 @@ feuilles <- excel_sheets(fichier)
 
 resultats <- data.frame(Pays = character(), Chi = numeric(), std_chi = numeric(), PMC_ev_res = numeric(), PMC_ev = numeric(), clr = data.frame(), p_value = numeric(), chi = numeric())
 
+date_temp <- as.Date(date_debut)
+
 for (nom_pays in feuilles) {
 
   if(nom_pays != "France_old" & nom_pays != "US_old"){
   donnees <- excel_import(fichier, nom_pays)
+  donnees <- donnees[rownames(donnees) >= date_debut & rownames(donnees) <= date_fin, ]
   print(nom_pays)
+
+  if (nom_pays == "France" || nom_pays == "Italie" || nom_pays == "Espagne") {
+  temp <- ts(donnees["conso"],
+             start = c(as.numeric(format(date_temp, "%Y")), as.numeric(format(date_temp, "%m"))),
+             frequency = 4)
+  donnees["conso"] <- X13(temp)
+}
+
+# Revenu
+if (nom_pays == "UK" || nom_pays == "Italie" || nom_pays == "Espagne") {
+  temp <- ts(donnees["revenu"],
+             start = c(as.numeric(format(date_temp, "%Y")), as.numeric(format(date_temp, "%m"))),
+             frequency = 4)
+  donnees["revenu"] <- X13(temp)}
 
   chi <- chi(donnees,date_debut,date_fin, 1)
   PMC_res <- PMC(donnees, 1, date_debut, date_fin, 1,TRUE)
   PMC <- PMC(donnees, 1, date_debut, date_fin, 1,FALSE)
-  print(chi['clr'])
+  
   resultats <- rbind(resultats, data.frame(Pays = nom_pays, Chi = chi['chi'], std_chi = chi['std_chi'],PMC_ev_res = unlist(PMC_res['PMC_ev']), PMC_ev = unlist(PMC['PMC_ev']), clr = as.data.frame(chi['clr']), p_value = chi['robpval'], R1 = chi['R1']))
   }}
  return(resultats)

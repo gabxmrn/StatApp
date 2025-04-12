@@ -87,7 +87,7 @@ plot_richesse(richesse_us, "US")
 # Pour les valeurs récentes
 date_debut <- "1999-01-01"
 #troncature en 2019 pour éviter les données COVID
-date_fin <- "2019-12-01"
+date_fin <- "2019-10-01"
 #plot_chi(data_us,20,date_debut,date_fin,1)
 chi2 <- chi(data_fr,date_debut,date_fin, 1)["chi"]
 print(chi2["chi"])
