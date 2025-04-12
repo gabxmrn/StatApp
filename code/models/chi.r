@@ -155,14 +155,16 @@ chi_with_year_dummy <- function(df, freq) {
   clr <- iv_model$CLR$ci
 
   # Test de Moreira
-  rob_pval <- CLR.test(iv_model)$p.value
+  rob_pval <- iv_model$CLR$p.value
+
+  adjust_R1 <- summary(model_IV)$adj.r.squared
 
   #Pour le calcul ultérieur de la PMC (résidu de l'ivreg)
   residuals <- c(NA,NA,NA,as.vector(residuals(model)))
 
   result <- list(model = iv_model,
                  chi = chi, std_chi = std, p_value = pval, residuals = residuals,
-                 clr = clr, robpval = rob_pval)
+                 clr = clr, robpval = rob_pval, R1 = adjust_R1)
 
   return(result)
 
