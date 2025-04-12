@@ -77,9 +77,12 @@ chi <- function(df, debut, fin, freq) {
   #Pour le calcul ultérieur de la PMC (résidu de l'ivreg)
   residuals <- c(NA,NA,NA,as.vector(residuals(model)))
 
+  #pour calculer le R1^2 barre
+  adjust_R1 <- summary(model_IV)$adj.r.squared
+
   result <- list(model = iv_model,
                  chi = chi, std_chi = std, pvalue = pval, residuals = residuals,
-                 clr = clr, robpval = rob_pval)
+                 clr = clr, robpval = rob_pval, R1 = adjust_R1)
 
   return(result)
 }

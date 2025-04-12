@@ -134,11 +134,13 @@ library(ggplot2)
 
 step <- "1 year" #pas du graphique
 window <- maille #longueur de la plage temporelle
-resultats <- data.frame(Annee = numeric(), Valeur = numeric(), std = numeric())
 
-type <- ""
-#type <- "_hw"
-#type <- "_fw"
+Type <- c("","_fw","_hw")
+resultats <- list()
+
+for(type in Type){
+resultats1 <- data.frame(Annee = numeric(), Valeur = numeric(), std = numeric())
+
 #Construction des plages d'années pour les calculs
 for (annee in seq.Date(as.Date(date_debut), as.Date(date_fin) - years(window), by = step)) {
   debut <- as.Date(annee)
@@ -153,14 +155,17 @@ for (annee in seq.Date(as.Date(date_debut), as.Date(date_fin) - years(window), b
   #p_value <- chi(df,debut, fin,freq)["p_value"]
   
   # Stocker les résultats
-  resultats <- rbind(resultats, data.frame(Annee = as.Date(annee) + years(window%/%2), Valeur = valeur, std=std))
+  resultats1 <- rbind(resultats1, data.frame(Annee = as.Date(annee) + years(window%/%2), Valeur = valeur, std=std))
 }
+moyenne_PMC[[type]] <- mean(resultats1$Valeur, na.rm = TRUE)
+resultats[[type]] <- resultats1}
+#resultats <- rbind(resultats,resultats1)}
 
 print(resultats)
 
 #coefficient pour l'intervalle de confiance à 95%
 coef_IC <- 1.96 / sqrt((4*window)/freq)
-moyenne_PMC <- mean(resultats$Valeur, na.rm = TRUE)
+
 
 # Tracer le graphique avec ggplot2
 plot <- ggplot(resultats, aes(x = Annee, y = Valeur)) +
@@ -169,12 +174,11 @@ plot <- ggplot(resultats, aes(x = Annee, y = Valeur)) +
   #geom_text(aes(label = paste("p-value:", round(as.numeric(p_value),4))), 
   #          hjust = -0.1, vjust = -0.5, size = 4, color = "black") +
   geom_hline(yintercept = moyenne_PMC, linetype = "dashed", color = "red", size = 1) +
-  geom_smooth(method = "loess", se = TRUE, color = "purple", fill = "lightgray", size = 1.2) +  # Courbe approximative, utilise une régression LOESS (Local Polynomial Regression)
+  geom_smooth(method = "loess", se = TRUE, aes(fill = Groupe), color = "purple", fill = "lightgray", size = 1.2) +  # Courbe approximative, utilise une régression LOESS (Local Polynomial Regression)
   labs(title = "Évolution de la valeur avec barres d'erreur",
        x = "Année de milieu de la plage",
        y = "PMC estimée") +
   theme_minimal()
 
 print(plot)
-
 }

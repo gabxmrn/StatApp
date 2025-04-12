@@ -85,7 +85,7 @@ plot_richesse(richesse_us, "US")
 #plot_chi(data_us_old,12,date_debut, date_fin,1)
 
 # Pour les valeurs récentes
-date_debut <- "1990-12-01"
+date_debut <- "1999-01-01"
 #troncature en 2019 pour éviter les données COVID
 date_fin <- "2019-12-01"
 #plot_chi(data_us,20,date_debut,date_fin,1)
@@ -106,7 +106,7 @@ PMC <- PMC(data_fr, 1, date_debut, date_fin, "1",TRUE)
 print(PMC)
 
 
-plot_PMC(data_us,20,date_debut,date_fin,1,FALSE)
+#plot_PMC(data_us,20,date_debut,date_fin,1,FALSE)
 
-#synthese <- synthese(1,date_debut,date_fin)
-#print(synthese)
+synthese <- synthese(1,date_debut,date_fin)
+print(synthese)

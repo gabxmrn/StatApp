@@ -77,7 +77,7 @@ source("code/models/PMC.R")
 fichier <- "code/data.xlsx"
 feuilles <- excel_sheets(fichier)
 
-resultats <- data.frame(Pays = character(), Chi = numeric(), PMC_ev = numeric(), PMC_ev_res = numeric())
+resultats <- data.frame(Pays = character(), Chi = numeric(), std_chi = numeric(), PMC_ev_res = numeric(), PMC_ev = numeric(), clr = data.frame(), p_value = numeric(), chi = numeric())
 
 for (nom_pays in feuilles) {
 
@@ -85,10 +85,11 @@ for (nom_pays in feuilles) {
   donnees <- excel_import(fichier, nom_pays)
   print(nom_pays)
 
-  chi <- chi(donnees,date_debut,date_fin, 1)["chi"]
+  chi <- chi(donnees,date_debut,date_fin, 1)
   PMC_res <- PMC(donnees, 1, date_debut, date_fin, 1,TRUE)
   PMC <- PMC(donnees, 1, date_debut, date_fin, 1,FALSE)
-  resultats <- rbind(resultats, data.frame(Pays = nom_pays, Chi = chi, PMC_ev_res = unlist(PMC_res['PMC_ev']), PMC_ev = unlist(PMC['PMC_ev'])))
+  print(chi['clr'])
+  resultats <- rbind(resultats, data.frame(Pays = nom_pays, Chi = chi['chi'], std_chi = chi['std_chi'],PMC_ev_res = unlist(PMC_res['PMC_ev']), PMC_ev = unlist(PMC['PMC_ev']), clr = as.data.frame(chi['clr']), p_value = chi['robpval'], R1 = chi['R1']))
   }}
  return(resultats)
  }
