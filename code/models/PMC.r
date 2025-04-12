@@ -118,7 +118,6 @@ PMC <- function(df, freq, date_debut, date_fin, methode_immo, chi_restricted = F
                  PMC_ev = PMC_ev, PMC_ev_fw = PMC_ev_fw, PMC_ev_hw = PMC_ev_hw,
                  model = model_2, model_HW_FW = model_3, std = std, std_fw = std_fw, std_hw = std_hw)
 
- 
   return(result)
 }
 
