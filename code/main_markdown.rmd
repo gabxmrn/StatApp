@@ -57,7 +57,7 @@ Cette option peut être outrepassée dans le morceau de code _select_dates_. Dan
 ```{r select_params, include=TRUE}
 
 # Paramètres du modèle
-pays <- "Italie" # France, US, UK, Italie, Espagne
+pays <- "Norvège" # France, US, UK, Italie, Espagne, Norvège
 methode_immo <- "1" # 1, 2, slac
 ```
 
@@ -68,7 +68,8 @@ if (pays != "France" &&
       pays != "US" &&
       pays != "UK" &&
       pays != "Italie" &&
-      pays != "Espagne") {
+      pays != "Espagne" &&
+      pays != "Norvège") {
   stop("Erreur: Sélectionner un pays disponible.")
 }
 
@@ -87,8 +88,8 @@ if (pays != "France") {
 
 ```{r select_dates, include=TRUE}
 
-# date_fin <- "2019-10-01"
-date_fin <- "2023-01-01"
+date_fin <- "2019-10-01"
+# date_fin <- "2023-01-01"
 # date_fin <- "2022-01-01"
 # Choix des paramètres: date_debut et date_fin
 if (pays == "France") {
@@ -122,6 +123,8 @@ if (pays == "France") {
   } else {
     date_debut <- "2001-01-01"
   }
+} else if (pays == "Norvège") {
+    date_debut <- "1999-01-01" 
 }
 
 # Sélection manuelle des dates
