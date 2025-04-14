@@ -39,7 +39,7 @@ Liste des pays disponibles avec les dates d'estimation et la méthode d'estimati
   * Jeux 3 (données slacalek): 1982 Q1 - 2023 Q1 
 * Etats-Unis:
   * Jeux 1 (données des comptes nationaux): 1970 Q1 - 2023 Q4
-  * Jeux 2 (données slacalek): 1970 Q1 - 2023 Q4
+  * Jeux 2 (données slacalek): 1990 Q1 - 2023 Q4
 * Royaume-Uni:
   * Jeux 1 (données des comptes nationaux):  1995 Q1 - 2023 Q1
   * Jeux 2 (données slacalek): 1987 Q1 - 2024 Q3
@@ -57,7 +57,7 @@ Cette option peut être outrepassée dans le morceau de code _select_dates_. Dan
 ```{r select_params, include=TRUE}
 
 # Paramètres du modèle
-pays <- "Espagne" # France, US, UK, Italie, Espagne
+pays <- "UK" # France, US, UK, Italie, Espagne
 methode_immo <- "1" # 1, 2, slac
 ```
 
@@ -87,9 +87,9 @@ if (pays != "France") {
 
 ```{r select_dates, include=FALSE}
 
-# date_fin <- "2019-10-01"
+date_fin <- "2019-10-01"
 # date_fin <- "2023-01-01"
-date_fin <- "2022-01-01"
+# date_fin <- "2022-01-01"
 # Choix des paramètres: date_debut et date_fin
 if (pays == "France") {
   if (methode_immo == "1") {
@@ -101,7 +101,7 @@ if (pays == "France") {
   }
   ###
 } else if (pays == "US") {
-  date_debut <- "1970-01-01"
+  date_debut <- "1990-01-01"
   ###
 } else if (pays == "UK") {
   if (methode_immo == "1") {
@@ -149,7 +149,7 @@ kable(tab_00,
       caption = "Visualisation des données")
 ```
 
-### Saisonnalité
+### Saisonnalité et conversions monétaires
 
 Séries nécessitant d'être désaisonnalisées:
 
@@ -187,6 +187,22 @@ if (pays == "France" && methode_immo == "2") {
              start = c(as.numeric(format(date_temp, "%Y")), as.numeric(format(date_temp, "%m"))),
              frequency = 4)
   data["immo_2"] <- X13(temp)
+}
+```
+
+Pays qui nécessitent d'être converties en euros:
+
+* Etats-Unis
+* Royaume-Uni
+
+Les séries convertis sont: la consommation, le revenu, le patrimoine financier et le patrimoine immobilier. Le code le fait automatiquement.
+
+```{r conversion, include=FALSE}
+
+if (pays == "US") {
+  data <- conversion_monetaire(data, pays)
+} else if (pays == "UK") {
+  data <- conversion_monetaire(data, pays)
 }
 ```
 
