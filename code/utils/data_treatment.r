@@ -23,21 +23,23 @@ richesse_immo_slacalek <- function(df) {
   return(df)
 }
 
-conversion_monetaire <- function(df, pays) {
+conversion_monetaire <- function(df) {
   # Fonction qui convertit les séries en euros
   # Séries: 1 USD -> x euros et 1£ -> x euros
 
-  if (pays == "Italie" || pays == "France" || pays == "US") {
-    tx_change <- df[, "usd_to_euro"]
-  } else if (pays == "UK") {
-    tx_change <- df[, "usd_to_pound"]
-  }
+  ppp <- df[, "PPP"]
+
+  # if (pays == "Italie" || pays == "France" || pays == "US") {
+  #   tx_change <- df[, "usd_to_euro"]
+  # } else if (pays == "UK") {
+  #   tx_change <- df[, "usd_to_pound"]
+  # }
 
   # Conversion des séries
-  df["conso"] <- df["conso"] / tx_change
-  df["revenu"] <- df["revenu"] / tx_change
-  df["actif_fin"] <- df["actif_fin"] / tx_change
-  df["immo_1"] <- df["immo_1"] / tx_change
+  df["conso"] <- df["conso"] / ppp
+  df["revenu"] <- df["revenu"] / ppp
+  df["actif_fin"] <- df["actif_fin"] / ppp
+  df["immo_1"] <- df["immo_1"] / ppp
 
   return(df)
 }
