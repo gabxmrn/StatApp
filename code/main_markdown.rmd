@@ -87,9 +87,9 @@ if (pays != "France") {
 
 ```{r select_dates, include=FALSE}
 
-date_fin <- "2019-10-01"
+# date_fin <- "2019-10-01"
 # date_fin <- "2023-01-01"
-
+date_fin <- "2022-01-01"
 # Choix des paramètres: date_debut et date_fin
 if (pays == "France") {
   if (methode_immo == "1") {
@@ -262,22 +262,22 @@ Calcul de la persistance de la consommation. Le paramètre "freq" correspond à 
 
 ```{r chi, include=TRUE}
 
-chi_fun <- chi(data, date_debut, date_fin, freq = 1)
+# chi_fun <- chi(data, date_debut, date_fin, freq = 1)
 
-print(chi_fun["chi"]) # Chi
-print(chi_fun["std_chi"]) # Ecart type Chi
-print(chi_fun["clr"]) # Moreira CLR (95%)
-print(chi_fun["robpval"]) # Robust pval avec test de Moreira
-print(chi_fun["adjust_R1"]) # R² de la régression 1
-print(summary(chi_fun[["model"]]))
+# print(chi_fun["chi"]) # Chi
+# print(chi_fun["std_chi"]) # Ecart type Chi
+# print(chi_fun["clr"]) # Moreira CLR (95%)
+# print(chi_fun["robpval"]) # Robust pval avec test de Moreira
+# print(chi_fun["adjust_R1"]) # R² de la régression 1
+# print(summary(chi_fun[["model"]]))
 
 # Calcul du chi avec une dummy pour le Covid
-# chi_fun_d <- chi_with_year_dummy(data, freq = 1)
-# print(chi_fun_d["chi"]) # Chi
-# print(chi_fun_d["std_chi"]) # Ecart type Chi
-# print(chi_fun_d["clr"]) # Moreira CLR (95%)
-# print(chi_fun_d["robpval"]) # Robust pval avec test de Moreira
-# print(chi_fun_d["adjust_R1"]) # R² de la régression 1
+chi_fun_d <- chi_with_year_dummy(data, freq = 1)
+print(chi_fun_d["chi"]) # Chi
+print(chi_fun_d["std_chi"]) # Ecart type Chi
+print(chi_fun_d["clr"]) # Moreira CLR (95%)
+print(chi_fun_d["robpval"]) # Robust pval avec test de Moreira
+print(summary(chi_fun_d[["model"]]))
 ```
 
 ### Calcul des PMC (immédiate et éventuelle)
