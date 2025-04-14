@@ -27,17 +27,17 @@ conversion_monetaire <- function(df, pays) {
   # Fonction qui convertit les séries en euros
   # Séries: 1 USD -> x euros et 1£ -> x euros
 
-  if (pays == "US") {
+  if (pays == "Italie" || pays == "France" || pays == "US") {
     tx_change <- df[, "usd_to_euro"]
   } else if (pays == "UK") {
-    tx_change <- df[, "pound_to_euro"]
+    tx_change <- df[, "usd_to_pound"]
   }
 
   # Conversion des séries
-  df["conso"] <- df["conso"] * tx_change
-  df["revenu"] <- df["revenu"] * tx_change
-  df["actif_fin"] <- df["actif_fin"] * tx_change
-  df["immo_1"] <- df["immo_1"]* tx_change
+  df["conso"] <- df["conso"] / tx_change
+  df["revenu"] <- df["revenu"] / tx_change
+  df["actif_fin"] <- df["actif_fin"] / tx_change
+  df["immo_1"] <- df["immo_1"] / tx_change
 
   return(df)
 }

@@ -38,7 +38,7 @@ Liste des pays disponibles avec les dates d'estimation et la méthode d'estimati
   * Jeux 2 (données de la Banque de France): 2009 Q4 - 2023 Q1
   * Jeux 3 (données slacalek): 1982 Q1 - 2023 Q1 
 * Etats-Unis:
-  * Jeux 1 (données des comptes nationaux): 1970 Q1 - 2023 Q4
+  * Jeux 1 (données des comptes nationaux): 1990 Q1 - 2023 Q4
   * Jeux 2 (données slacalek): 1990 Q1 - 2023 Q4
 * Royaume-Uni:
   * Jeux 1 (données des comptes nationaux):  1995 Q1 - 2023 Q1
@@ -57,7 +57,7 @@ Cette option peut être outrepassée dans le morceau de code _select_dates_. Dan
 ```{r select_params, include=TRUE}
 
 # Paramètres du modèle
-pays <- "US" # France, US, UK, Italie, Espagne
+pays <- "Italie" # France, US, UK, Italie, Espagne
 methode_immo <- "1" # 1, 2, slac
 ```
 
@@ -85,10 +85,10 @@ if (pays != "France") {
 
 ```
 
-```{r select_dates, include=FALSE}
+```{r select_dates, include=TRUE}
 
-date_fin <- "2019-10-01"
-# date_fin <- "2023-01-01"
+# date_fin <- "2019-10-01"
+date_fin <- "2023-01-01"
 # date_fin <- "2022-01-01"
 # Choix des paramètres: date_debut et date_fin
 if (pays == "France") {
@@ -199,7 +199,7 @@ Les séries convertis sont: la consommation, le revenu, le patrimoine financier 
 
 ```{r conversion, include=FALSE}
 
-if (pays == "US") {
+if (pays == "France" || pays == "Espagne" || pays == "Italie") {
   data <- conversion_monetaire(data, pays)
 } else if (pays == "UK") {
   data <- conversion_monetaire(data, pays)
@@ -278,22 +278,22 @@ Calcul de la persistance de la consommation. Le paramètre "freq" correspond à 
 
 ```{r chi, include=TRUE}
 
-chi_fun <- chi(data, date_debut, date_fin, freq = 1)
+# chi_fun <- chi(data, date_debut, date_fin, freq = 1)
 
-print(chi_fun["chi"]) # Chi
-print(chi_fun["std_chi"]) # Ecart type Chi
-print(chi_fun["clr"]) # Moreira CLR (95%)
-print(chi_fun["robpval"]) # Robust pval avec test de Moreira
-print(chi_fun["adjust_R1"]) # R² de la régression 1
-print(summary(chi_fun[["model"]]))
+# print(chi_fun["chi"]) # Chi
+# print(chi_fun["std_chi"]) # Ecart type Chi
+# print(chi_fun["clr"]) # Moreira CLR (95%)
+# print(chi_fun["robpval"]) # Robust pval avec test de Moreira
+# print(chi_fun["adjust_R1"]) # R² de la régression 1
+# print(summary(chi_fun[["model"]]))
 
 # Calcul du chi avec une dummy pour le Covid
-# chi_fun_d <- chi_with_year_dummy(data, freq = 1)
-# print(chi_fun_d["chi"]) # Chi
-# print(chi_fun_d["std_chi"]) # Ecart type Chi
-# print(chi_fun_d["clr"]) # Moreira CLR (95%)
-# print(chi_fun_d["robpval"]) # Robust pval avec test de Moreira
-# print(summary(chi_fun_d[["model"]]))
+chi_fun_d <- chi_with_year_dummy(data, freq = 1)
+print(chi_fun_d["chi"]) # Chi
+print(chi_fun_d["std_chi"]) # Ecart type Chi
+print(chi_fun_d["clr"]) # Moreira CLR (95%)
+print(chi_fun_d["robpval"]) # Robust pval avec test de Moreira
+print(summary(chi_fun_d[["model"]]))
 ```
 
 ### Calcul des PMC (immédiate et éventuelle)
