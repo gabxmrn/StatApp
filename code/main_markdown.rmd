@@ -1,9 +1,9 @@
 ---
 title: "Analyse des effets de richesse des ménages"
 subtitle: "Projet de statistiques appliquées"
-author: "Mohamed Mahmoud El Ghaouth, Cyprien Mathé, Gabrielle Morin et Jame Valette"
+author: "Mohamed Mahmoud El Ghaouth, Cyprien Mathé, Gabrielle Morin et Jame Vallette"
 output: 
-  html_document:
+  html_document:  
     toc: true
     number_sections: true
     toc_float: false
@@ -17,14 +17,14 @@ library(kableExtra)
 library(dplyr)
 
 # Importation des fonctions à utiliser
-source(here("code/utils/import.R"))
-source(here("code/utils/data_treatment.R"))
-source(here("code/utils/data_visualisation.R"))
-source(here("code/utils/graphs.R"))
-source(here("code/utils/test_correlation.R"))
-source(here("code/utils/stationarity.R"))
-source(here("code/models/chi.R"))
-source(here("code/models/PMC.R"))
+source(here("code/utils/import.r"))
+source(here("code/utils/data_treatment.r"))
+source(here("code/utils/data_visualisation.r"))
+source(here("code/utils/graphs.r"))
+source(here("code/utils/test_correlation.r"))
+source(here("code/utils/stationarity.r"))
+source(here("code/models/chi.r"))
+source(here("code/models/PMC.r"))
 ```
 
 ## Jeux de données
