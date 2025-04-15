@@ -1,13 +1,7 @@
 plot_richesse <- function(df, pays) {
 
-  if (pays == "France" || pays == "Italie" || pays == "Espagne") {
-    yleg <- "Valeur en euros (base 2015)"
-  } else if (pays == "US") {
-    yleg <- "Valeur en dollars (base 2015)"
-  } else if (pays == "UK") {
-    yleg <- "Valeur en pound sterling (base 2015)"
-  }
-
+  yleg <- "Valeur en USD"
+  
   dates <- as.Date(rownames(df))
 
   y_min <- min(c(df$pat_immo, df$pat_fin))
@@ -27,13 +21,7 @@ plot_richesse <- function(df, pays) {
 
 plot_consommation <- function(df, pays) {
 
-  if (pays == "France" || pays == "Italie" || pays == "Espagne") {
-    yleg <- "Valeur en euros (base 2015)"
-  } else if (pays == "US") {
-    yleg <- "Valeur en dollars (base 2015)"
-  } else if (pays == "UK") {
-    yleg <- "Valeur en pound sterling (base 2015)"
-  }
+  yleg <- "Valeur en USD"
 
   dates <- as.Date(rownames(df))
 

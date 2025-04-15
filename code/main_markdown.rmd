@@ -57,7 +57,7 @@ Cette option peut être outrepassée dans le morceau de code _select_dates_. Dan
 ```{r select_params, include=TRUE}
 
 # Paramètres du modèle
-pays <- "Espagne" # France, US, UK, Italie, Espagne, Norvège
+pays <- "Norvège" # France, US, UK, Italie, Espagne, Norvège
 methode_immo <- "1" # 1, 2, slac
 ```
 
@@ -88,9 +88,9 @@ if (pays != "France") {
 
 ```{r select_dates, include=TRUE}
 
-# date_fin <- "2019-10-01"
+date_fin <- "2019-10-01"
 # date_fin <- "2023-01-01"
-date_fin <- "2022-01-01"
+# date_fin <- "2022-01-01"
 # Choix des paramètres: date_debut et date_fin
 if (pays == "France") {
   if (methode_immo == "1") {
@@ -142,7 +142,7 @@ data <- excel_import(here("code/data.xlsx"), pays)
 data <- data[rownames(data) >= date_debut & rownames(data) <= date_fin, ]
 
 # Calcul du patrimoine immobilier avec la méthode de Slacalek
-data <- richesse_immo_slacalek(data)
+# data <- richesse_immo_slacalek(data)
 
 # Visualisation
 tab_00 <- data.frame(head(data))
@@ -224,13 +224,13 @@ df <- data[rownames(data) >= date_debut & rownames(data) <= date_fin,]
 
 # Statistiques descriptives
 tab_01 <- data.frame(
-  Statistiques = c("Consommation", "Patrimoine financier", "Patrimoine immobilier 1", "Patrimoine immobilier Slacalek"),
-  Min = c(min(df$conso), min(df$actif_fin), min(df$immo_1), min(df$immo_slac)),
-  Médiane = c(median(df$conso), median(df$actif_fin), median(df$immo_1), median(df$immo_slac)),
-  Moyenne = c(mean(df$conso), mean(df$actif_fin), mean(df$immo_1), mean(df$immo_slac)),
-  Max = c(max(df$conso), max(df$actif_fin), max(df$immo_1), max(df$immo_slac)),
-  Variance = c(var(df$conso), var(df$actif_fin), var(df$immo_1), var(df$immo_slac)),
-  SD = c(sd(df$conso), sd(df$actif_fin), sd(df$immo_1), sd(df$immo_slac))
+  Statistiques = c("Consommation", "Patrimoine financier", "Patrimoine immobilier 1"),
+  Min = c(min(df$conso), min(df$actif_fin), min(df$immo_1)),
+  Médiane = c(median(df$conso), median(df$actif_fin), median(df$immo_1)),
+  Moyenne = c(mean(df$conso), mean(df$actif_fin), mean(df$immo_1)),
+  Max = c(max(df$conso), max(df$actif_fin), max(df$immo_1)),
+  Variance = c(var(df$conso), var(df$actif_fin), var(df$immo_1)),
+  SD = c(sd(df$conso), sd(df$actif_fin), sd(df$immo_1))
 )
 
 kable(
@@ -285,22 +285,22 @@ Calcul de la persistance de la consommation. Le paramètre "freq" correspond à 
 
 ```{r chi, include=TRUE}
 
-# chi_fun <- chi(data, date_debut, date_fin, freq = 1)
+chi_fun <- chi(data, date_debut, date_fin, freq = 1)
 
-# print(chi_fun["chi"]) # Chi
-# print(chi_fun["std_chi"]) # Ecart type Chi
-# print(chi_fun["clr"]) # Moreira CLR (95%)
-# print(chi_fun["robpval"]) # Robust pval avec test de Moreira
-# print(chi_fun["adjust_R1"]) # R² de la régression 1
-# print(summary(chi_fun[["model"]]))
+print(chi_fun["chi"]) # Chi
+print(chi_fun["std_chi"]) # Ecart type Chi
+print(chi_fun["clr"]) # Moreira CLR (95%)
+print(chi_fun["robpval"]) # Robust pval avec test de Moreira
+print(chi_fun["adjust_R1"]) # R² de la régression 1
+print(summary(chi_fun[["model"]]))
 
 # Calcul du chi avec une dummy pour le Covid
-chi_fun_d <- chi_with_year_dummy(data, freq = 1)
-print(chi_fun_d["chi"]) # Chi
-print(chi_fun_d["std_chi"]) # Ecart type Chi
-print(chi_fun_d["clr"]) # Moreira CLR (95%)
-print(chi_fun_d["robpval"]) # Robust pval avec test de Moreira
-print(summary(chi_fun_d[["model"]]))
+# chi_fun_d <- chi_with_year_dummy(data, freq = 1)
+# print(chi_fun_d["chi"]) # Chi
+# print(chi_fun_d["std_chi"]) # Ecart type Chi
+# print(chi_fun_d["clr"]) # Moreira CLR (95%)
+# print(chi_fun_d["robpval"]) # Robust pval avec test de Moreira
+# print(summary(chi_fun_d[["model"]]))
 ```
 
 ### Calcul des PMC (immédiate et éventuelle)
