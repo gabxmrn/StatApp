@@ -8,9 +8,9 @@ PMC <- function(df, freq, date_debut, date_fin, methode_immo, chi_restricted = F
   # Importations
   library(dplyr)
   library(here)
-  source(here("code/models/chi.R"))
-  source(here("code/utils/data_treatment.R"))
-  source(here("code/utils/data_visualisation.R"))
+  source(here("code/models/chi.r"))
+  source(here("code/utils/data_treatment.r"))
+  source(here("code/utils/data_visualisation.r"))
 
   #df des nouvelles variables
   data_new <- df[rownames(df) >= date_debut & rownames(df) <= date_fin, ][seq(1, nrow(df), by = freq), ]
@@ -126,7 +126,7 @@ PMC <- function(df, freq, date_debut, date_fin, methode_immo, chi_restricted = F
 plot_PMC <- function(df,maille, date_debut, date_fin,freq,chi_restricted = FALSE){
 
 source("code/models/PMC.r")
-source("code/models/chi.R")
+source("code/models/chi.r")
 
 library(lubridate)
 library(ggplot2)

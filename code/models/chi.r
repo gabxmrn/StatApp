@@ -93,7 +93,7 @@ chi_with_year_dummy <- function(df, freq) {
   library(dplyr)
   library(ivmodel)
   library(here)
-  source(here("code/utils/data_treatment.R"))
+  source(here("code/utils/data_treatment.r"))
 
   # Data frame de travail
   data_new <- df[seq(1, nrow(df), by = freq), ]
@@ -179,7 +179,7 @@ plot_chi <- function(df, maille, date_debut, date_fin, freq) {
   library(ggplot2)
   library(here)
 
-  source(here("code/models/chi.R"))
+  source(here("code/models/chi.r"))
 
 
 step <- "1 year" #pas du graphique

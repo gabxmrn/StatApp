@@ -90,10 +90,10 @@ compute_weighted_sum_lag <- function(x, chi) {
 
 synthese <- function(freq,date_debut,date_fin){
 
-source("code/utils/data_treatment.R")
-source("code/utils/data_visualisation.R")
-source("code/models/chi.R")
-source("code/models/PMC.R")
+source("code/utils/data_treatment.r")
+source("code/utils/data_visualisation.r")
+source("code/models/chi.r")
+source("code/models/PMC.r")
 
 fichier <- "code/data.xlsx"
 feuilles <- excel_sheets(fichier)
