@@ -1,8 +1,3 @@
-
-#data_new n'est pas que pour les US, c'est une ancienne notation
-#probablement encore un problème dans les données de richesse us
-#et aussi un peut etre un problème de date dans la fusion de data_new et richesse_us
-
 PMC <- function(df, freq, date_debut, date_fin, methode_immo, chi_restricted = FALSE) {
 
   # Importations

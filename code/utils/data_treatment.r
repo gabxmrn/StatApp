@@ -24,16 +24,8 @@ richesse_immo_slacalek <- function(df) {
 }
 
 conversion_monetaire <- function(df) {
-  # Fonction qui convertit les séries en euros
-  # Séries: 1 USD -> x euros et 1£ -> x euros
 
   ppp <- df[, "PPP"]
-
-  # if (pays == "Italie" || pays == "France" || pays == "US") {
-  #   tx_change <- df[, "usd_to_euro"]
-  # } else if (pays == "UK") {
-  #   tx_change <- df[, "usd_to_pound"]
-  # }
 
   # Conversion des séries
   df["conso"] <- df["conso"] / ppp

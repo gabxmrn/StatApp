@@ -1,6 +1,6 @@
 plot_richesse <- function(df, pays) {
 
-  yleg <- "Valeur en USD"
+  yleg <- "Valeur en USD (base 2015)"
   
   dates <- as.Date(rownames(df))
 
@@ -21,7 +21,7 @@ plot_richesse <- function(df, pays) {
 
 plot_consommation <- function(df, pays) {
 
-  yleg <- "Valeur en USD"
+  yleg <- "Valeur en USD (base 2015)"
 
   dates <- as.Date(rownames(df))
 

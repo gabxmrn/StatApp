@@ -36,20 +36,16 @@ Liste des pays disponibles avec les dates d'estimation et la méthode d'estimati
 * France:
   * Jeux 1 (données des comptes nationaux): 1995 Q1 - 2023 Q1
   * Jeux 2 (données de la Banque de France): 2009 Q4 - 2023 Q1
-  * Jeux 3 (données slacalek): 1982 Q1 - 2023 Q1 
 * Etats-Unis:
-  * Jeux 1 (données des comptes nationaux): 1990 Q1 - 2023 Q4
-  * Jeux 2 (données slacalek): 1990 Q1 - 2023 Q4
+  * données des comptes nationaux: 1990 Q1 - 2023 Q4
 * Royaume-Uni:
-  * Jeux 1 (données des comptes nationaux):  1995 Q1 - 2023 Q1
-  * Jeux 2 (données slacalek): 1987 Q1 - 2024 Q3
+  * données des comptes nationaux:  1995 Q1 - 2023 Q1
 * Italie:
-  * Jeux 1 (données des comptes nationaux): 1999 Q1 - 2023 Q1 
-  * Jeux 2 (données slacalek): 1999 Q1 - 2017 Q1
+  * données des comptes nationaux: 1999 Q1 - 2023 Q1
 * Espagne:
-  * Jeux 1 (données des comptes nationaux): 1999 Q1 - 2022 Q1
-  * Jeux 2 (données slacalek): 2001 Q1 - 2023 Q1
-
+  * données des comptes nationaux: 1999 Q1 - 2022 Q1
+* Norvège:
+  * données des comptes nationaux: 1999 Q1 - 2020 Q1
 Les dates sont sélectionnées de manière automatique. Elles correspondent à une date de début définie ci-dessus et une date de fin fixe (Q4 2019) excepté pour l'Italie quand on utilise la méthode Slacalek pour estimer la richesse immobilière (Q1 2017).
 
 Cette option peut être outrepassée dans le morceau de code _select_dates_. Dans ce cas, entrez les dates dans le format "aaaa-mm-01", avec "mm" le mois de début du trimestre (Q1: 01, Q2: 04, Q3: 07, Q4: 10).
@@ -57,7 +53,7 @@ Cette option peut être outrepassée dans le morceau de code _select_dates_. Dan
 ```{r select_params, include=TRUE}
 
 # Paramètres du modèle
-pays <- "Norvège" # France, US, UK, Italie, Espagne, Norvège
+pays <- "France" # France, US, UK, Italie, Espagne, Norvège
 methode_immo <- "1" # 1, 2, slac
 ```
 
@@ -89,40 +85,28 @@ if (pays != "France") {
 ```{r select_dates, include=TRUE}
 
 date_fin <- "2019-10-01"
-# date_fin <- "2023-01-01"
 # date_fin <- "2022-01-01"
+# date_fin <- "2004-10-01"
+
 # Choix des paramètres: date_debut et date_fin
 if (pays == "France") {
   if (methode_immo == "1") {
     date_debut <- "1995-01-01"
   } else if (methode_immo == "2") {
     date_debut <- "2009-10-01"
-  } else {
-    date_debut <- "1982-01-01"
   }
   ###
 } else if (pays == "US") {
-  date_debut <- "1970-01-01"
+    date_debut <- "1970-01-01"
   ###
 } else if (pays == "UK") {
-  if (methode_immo == "1") {
     date_debut <- "1995-01-01"
-  } else {
-    date_debut <- "1987-01-01"
-  }
   ###
 } else if (pays == "Italie") {
-  date_debut <- "1999-01-01"
-  if (methode_immo == "slac") {
-    date_fin <- "2017-01-01"
-  }
+    date_debut <- "1999-01-01"
   ###
 } else if (pays == "Espagne") {
-  if (methode_immo == "1") {
     date_debut <- "1999-01-01"
-  } else {
-    date_debut <- "2001-01-01"
-  }
 } else if (pays == "Norvège") {
     date_debut <- "1999-01-01"
 }
@@ -204,13 +188,6 @@ Les séries convertis sont: la consommation, le revenu, le patrimoine financier 
 
 
 data <- conversion_monetaire(data)
-
-
-# if (pays == "France" || pays == "Espagne" || pays == "Italie") {
-#   data <- conversion_monetaire(data, pays)
-# } else if (pays == "UK") {
-#   data <- conversion_monetaire(data, pays)
-# }
 ```
 
 ### Statistiques descriptives
